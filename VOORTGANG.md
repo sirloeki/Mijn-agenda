@@ -31,7 +31,8 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - `manifest.webmanifest`: naam, kleuren en iconen van de app
   - `sw.js` (service worker): maakt installeren mogelijk en laat de app ook zonder internet openen.
     Haalt altijd eerst de nieuwste versie op; bewaarde kopie alleen als er geen internet is.
-  - `iconen/`: groen agenda-icoon (`icoon.svg` is het origineel, de PNG's zijn daarvan gemaakt)
+  - `iconen/`: app-icoon in Fortuna Sittard-stijl: geel agendablaadje met voetbal op groen
+    (eigen ontwerp, niet het officiële clublogo). `icoon.svg` is het origineel, de PNG's zijn daarvan gemaakt.
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
