@@ -3,7 +3,7 @@
 Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende stap is.
 
 ## Stappenplan
-1. [ ] Plan en vragen (bezig)
+1. [x] Plan en vragen
 2. [x] GitHub-project opzetten (repository `Mijn-agenda` bestaat al)
 3. [ ] Eerste versie: weekweergave met voorbeeldafspraken
 4. [ ] Online zetten via GitHub Pages en testen op telefoon
@@ -13,7 +13,8 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 8. [ ] Verfijnen met extra wensen
 
 ## Gedaan
-- Outlook-agenda geëxporteerd als .ics en veilig bewaard (niet in GitHub, want privé).
+- Outlook-agenda geëxporteerd als .ics en veilig bewaard in Google Drive (niet in GitHub, want privé).
+- Het .ics-bestand is nog NIET in Google Calendar geïmporteerd. Dat doen we bij stap 6.
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
@@ -22,12 +23,10 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 - **Hele-dag-afspraken:** in een aparte strook bovenaan, zoals in Outlook.
 - **Opslag:** afspraken staan in Google Calendar; de app leest en schrijft via de Google Calendar API.
 - **Hosting:** gratis via GitHub Pages.
-
-## Open vragen
-- Eén of meerdere Google-agenda's? Elk een eigen kleur?
-- Kleur voor de app en het icoon?
-- Is het Google-account (Gmail) klaar?
-- Is de .ics al geïmporteerd in Google Calendar?
+- **Kleuren:** groen als hoofdkleur voor de app en het icoon.
+- **Categorieën:** zoals in Outlook, bijv. Privé en Reizen, elk met een eigen kleur.
+  Google Calendar kent geen Outlook-categorieën. Bij stap 6 kiezen we hoe we dat oplossen
+  (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Open vragen beantwoorden, daarna starten met stap 3 (eerste versie van de weekweergave).
+Stap 3: eerste versie van de weekweergave met voorbeeldafspraken (nog zonder Google).
