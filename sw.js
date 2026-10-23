@@ -4,7 +4,7 @@
 // internet te halen; lukt dat niet, dan gebruiken we de bewaarde kopie.
 // =====================================================================
 
-const CACHE = 'mijn-agenda-v6';
+const CACHE = 'mijn-agenda-v7';
 const BESTANDEN = [
   './',
   './index.html',
@@ -42,8 +42,10 @@ self.addEventListener('fetch', event => {
   const verzoek = event.request;
   if (verzoek.method !== 'GET' || new URL(verzoek.url).origin !== location.origin) return;
 
+  // 'no-cache': altijd even bij GitHub navragen of er een nieuwere versie is
+  // (anders kan de browser tot 10 minuten een oude versie blijven tonen)
   event.respondWith(
-    fetch(verzoek)
+    fetch(verzoek, { cache: 'no-cache' })
       .then(antwoord => {
         const kopie = antwoord.clone();
         caches.open(CACHE).then(cache => cache.put(verzoek, kopie));
