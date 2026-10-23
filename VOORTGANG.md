@@ -11,7 +11,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 6. [ ] Koppeling met Google Calendar (bezig)
    - [x] 6a. Google Cloud-project aanmaken (naam "Mijn agenda", project-ID `mijn-agenda-512509`, geen organisatie, GEEN betaalgegevens/free trial)
    - [x] 6b. Google Calendar API aanzetten
-   - [ ] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker
+   - [x] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker (External, status Testing laten staan)
    - [ ] 6d. Client-ID (inlogsleutel voor de app) maken
    - [ ] 6e. Inloggen en afspraken lezen in de app bouwen
    - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
