@@ -10,7 +10,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 5. [x] Installeerbaar maken als app met icoon (PWA)
 6. [ ] Koppeling met Google Calendar (bezig)
    - [x] 6a. Google Cloud-project aanmaken (naam "Mijn agenda", project-ID `mijn-agenda-512509`, geen organisatie, GEEN betaalgegevens/free trial)
-   - [ ] 6b. Google Calendar API aanzetten
+   - [x] 6b. Google Calendar API aanzetten
    - [ ] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker
    - [ ] 6d. Client-ID (inlogsleutel voor de app) maken
    - [ ] 6e. Inloggen en afspraken lezen in de app bouwen
