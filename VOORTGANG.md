@@ -20,13 +20,15 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
            Bijna alles zonder categorie; alleen "Travelling" (166) komt echt voor.
      - [x] Keuzes ronde 2: vanaf 1 jan 2026; agenda "Werk (Outlook)" voor alles, "Reizen" voor Travelling
      - [x] Ronde 2 gebouwd (getest met nagebootste Google)
-     - [ ] Ronde 2 uitvoeren met het echte bestand
+     - [x] Ronde 2 uitgevoerd: 1.000 naar "Werk (Outlook)", 19 naar "Reizen", 108 aangepaste keren; 0 mislukt.
+           Let op: tijdzones "Unnamed Time Zone 1" en "Unnamed Time Zone 3" uit Outlook zijn als Amsterdam-tijd
+           overgenomen; afspraken daarmee kunnen een paar uur verschoven zijn (nog controleren).
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen
 
 ## Gedaan
 - Outlook-agenda geëxporteerd als .ics en veilig bewaard in Google Drive (niet in GitHub, want privé).
-- Het .ics-bestand is nog NIET in Google Calendar geïmporteerd. Dat doen we bij stap 6.
+- Het .ics-bestand is geïmporteerd in Google (stap 6f), vanaf 1 jan 2026.
 - Eerste versie van de app gebouwd (stap 3):
   - `index.html`: de opbouw van de pagina
   - `style.css`: de opmaak (kleuren, licht/donker, telefoon/laptop)
@@ -83,4 +85,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 6f ronde 2 uitvoeren met het echte bestand (op de laptop), resultaat controleren in de app.
+Resultaat van de import controleren in de app op de telefoon; daarna stap 7 (afspraken toevoegen/aanpassen/verwijderen).
