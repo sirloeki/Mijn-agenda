@@ -12,8 +12,8 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
    - [x] 6a. Google Cloud-project aanmaken (naam "Mijn agenda", project-ID `mijn-agenda-512509`, geen organisatie, GEEN betaalgegevens/free trial)
    - [x] 6b. Google Calendar API aanzetten
    - [x] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker (External, status Testing laten staan)
-   - [ ] 6d. Client-ID (inlogsleutel voor de app) maken
-   - [ ] 6e. Inloggen en afspraken lezen in de app bouwen
+   - [x] 6d. Client-ID (inlogsleutel voor de app) maken (type Web application, origin `https://sirloeki.github.io`)
+   - [~] 6e. Inloggen en afspraken lezen in de app bouwen (gebouwd, nog testen met echte Google op de telefoon)
    - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen
@@ -40,6 +40,14 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - App staat geïnstalleerd op de telefoon (via de echte Chrome-app, niet via een link in een andere app).
   - `iconen/`: app-icoon in Fortuna Sittard-stijl: geel agendablaadje met voetbal op groen
     (eigen ontwerp, niet het officiële clublogo). `icoon.svg` is het origineel, de PNG's zijn daarvan gemaakt.
+
+- Google-koppeling gebouwd (stap 6e):
+  - `google.js`: inloggen met Google (Google Identity Services) en agenda's/afspraken ophalen
+    via de Google Calendar API. Geen eigen server; de app praat rechtstreeks met Google.
+  - Client-ID staat in `google.js` (openbaar, niet geheim). Het Client secret wordt NIET gebruikt.
+  - Toegang (token) is ~1 uur geldig en wordt op het apparaat bewaard; daarna één tik op "Inloggen met Google".
+  - De voorbeeldafspraken zijn weg; de app toont nu de aangevinkte agenda's uit Google, in hun Google-kleur.
+  - Bij terugkeren naar de app worden de afspraken ververst.
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.

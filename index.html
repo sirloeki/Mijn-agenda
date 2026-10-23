@@ -30,8 +30,19 @@
     </div>
   </header>
 
-  <!-- Legenda met de kleuren per categorie -->
-  <div id="legenda" class="legenda"></div>
+  <!-- Verschijnt als je (nog) niet bent ingelogd -->
+  <div id="inlogbalk" class="inlogbalk" hidden>
+    <p>Log in met Google om je afspraken te zien.</p>
+    <button id="inloggen" class="knop actief">Inloggen met Google</button>
+    <p id="inlogmelding" class="melding"></p>
+  </div>
+
+  <!-- Legenda met je agenda's, laadstatus en uitlogknop -->
+  <div class="legenda">
+    <div id="legenda-agendas" class="legenda-agendas"></div>
+    <span id="status" class="status"></span>
+    <button id="uitloggen" class="tekstknop" hidden>Uitloggen</button>
+  </div>
 
   <!-- Hier tekent app.js de agenda -->
   <main id="agenda"></main>
@@ -44,12 +55,14 @@
     </div>
     <p id="details-tijd"></p>
     <p id="details-locatie"></p>
-    <p id="details-categorie"></p>
+    <p id="details-agenda"></p>
     <form method="dialog">
       <button class="knop">Sluiten</button>
     </form>
   </dialog>
 
+  <script src="https://accounts.google.com/gsi/client" async></script>
+  <script src="google.js"></script>
   <script src="app.js"></script>
 </body>
 </html>

@@ -1,18 +1,13 @@
 // =====================================================================
-// Mijn Agenda – eerste versie
-// Toont een weekweergave met voorbeeldafspraken (nog zonder Google).
+// Mijn Agenda
+// Toont een weekweergave met je afspraken uit Google Agenda.
+// Het praten met Google zelf staat in google.js.
 // =====================================================================
 
 // ----- Instellingen -----
 const EERSTE_UUR_IN_BEELD = 7;   // de agenda opent op 07:00
 const LAATSTE_UUR_IN_BEELD = 22; // en 07:00–22:00 past precies op het scherm
 const MINSTE_UUR_HOOGTE = 40;    // in pixels, zodat afspraken leesbaar blijven
-
-const CATEGORIEEN = {
-  werk:   { naam: 'Werk',   kleur: '#2e7d32' },
-  prive:  { naam: 'Privé',  kleur: '#7cb342' },
-  reizen: { naam: 'Reizen', kleur: '#00897b' },
-};
 
 // ----- Hulpjes voor datums -----
 function beginVanDag(datum) {
@@ -40,12 +35,6 @@ function zelfdeDag(a, b) {
     && a.getDate() === b.getDate();
 }
 
-function opTijd(dag, uur, minuut = 0) {
-  const d = new Date(dag);
-  d.setHours(uur, minuut, 0, 0);
-  return d;
-}
-
 // Weeknummer zoals in Nederland gebruikelijk (ISO-week)
 function weeknummer(datum) {
   const donderdag = plusDagen(maandagVan(datum), 3);
@@ -63,50 +52,11 @@ const dagNotatie = new Intl.DateTimeFormat('nl-NL', { weekday: 'short' });
 const langeDatum = new Intl.DateTimeFormat('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const periodeNotatie = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
 
-// ----- Voorbeeldafspraken (rond de huidige week, zodat je altijd iets ziet) -----
-function voorbeeldAfspraken() {
-  const maandag = maandagVan(new Date());
-  const dag = n => plusDagen(maandag, n);
-
-  const metTijd = (titel, dagNr, van, tot, categorie, locatie = '') => ({
-    titel,
-    start: opTijd(dag(dagNr), ...van),
-    eind: opTijd(dag(dagNr), ...tot),
-    heleDag: false,
-    categorie,
-    locatie,
-  });
-
-  // Bij hele-dag-afspraken is 'eind' de dag ná de laatste dag (net als bij Google)
-  const heleDag = (titel, vanDag, totDag, categorie) => ({
-    titel,
-    start: dag(vanDag),
-    eind: dag(totDag),
-    heleDag: true,
-    categorie,
-    locatie: '',
-  });
-
-  return [
-    metTijd('Sporten', 0, [7, 30], [8, 30], 'prive', 'Sportschool'),
-    metTijd('Teamoverleg', 0, [10, 0], [11, 30], 'werk', 'Vergaderzaal 2'),
-    metTijd('Lunch met Sanne', 1, [12, 0], [13, 0], 'prive', 'Café de Zon'),
-    metTijd('Treinreis naar Utrecht', 2, [8, 0], [9, 15], 'reizen', 'Utrecht Centraal'),
-    metTijd('Klantbezoek', 2, [9, 30], [11, 0], 'werk', 'Utrecht'),
-    metTijd('Bellen met leverancier', 2, [10, 15], [10, 45], 'werk'),
-    metTijd('Terugreis', 2, [16, 30], [17, 45], 'reizen'),
-    metTijd('Tandarts', 3, [15, 0], [15, 30], 'prive', 'Tandartspraktijk'),
-    metTijd('Verjaardagsfeest', 3, [19, 30], [22, 30], 'prive'),
-    metTijd('Project afronden', 4, [9, 0], [12, 0], 'werk'),
-    metTijd('Markt', 5, [10, 0], [11, 30], 'prive'),
-    metTijd('Wandelen', 6, [14, 0], [16, 0], 'prive', 'Strand'),
-    metTijd('Planning volgende week', 7, [9, 0], [10, 0], 'werk'),
-    heleDag('Verjaardag oma', 3, 4, 'prive'),
-    heleDag('Weekendje weg', 4, 7, 'reizen'),
-  ];
-}
-
-const afspraken = voorbeeldAfspraken();
+// ----- Afspraken uit Google -----
+let agendas = [];            // de agenda's uit Google, met naam en kleur
+let afspraken = [];          // de afspraken van de week die in beeld is
+const weekCache = new Map(); // al opgehaalde weken, zodat terugbladeren snel gaat
+let laadNummer = 0;          // om oude antwoorden te negeren als je snel doorklikt
 
 // ----- Wat er nu op het scherm staat -----
 const staat = {
@@ -253,7 +203,7 @@ function afsprakenOpDag(dag) {
 
 function maakAfspraakKnop(afspraak) {
   const knop = maak('button', 'afspraak');
-  knop.style.setProperty('--kleur', CATEGORIEEN[afspraak.categorie].kleur);
+  knop.style.setProperty('--kleur', afspraak.agenda.kleur);
   const titel = maak('strong');
   titel.textContent = afspraak.titel;
   knop.append(titel);
@@ -274,8 +224,7 @@ function maak(tag, klasse) {
 
 // ----- Details van een afspraak -----
 function toonDetails(afspraak) {
-  const categorie = CATEGORIEEN[afspraak.categorie];
-  document.getElementById('details-kleur').style.setProperty('--kleur', categorie.kleur);
+  document.getElementById('details-kleur').style.setProperty('--kleur', afspraak.agenda.kleur);
   document.getElementById('details-titel').textContent = afspraak.titel;
 
   let tijd;
@@ -289,7 +238,7 @@ function toonDetails(afspraak) {
   }
   document.getElementById('details-tijd').textContent = '🕒 ' + tijd;
   document.getElementById('details-locatie').textContent = afspraak.locatie ? '📍 ' + afspraak.locatie : '';
-  document.getElementById('details-categorie').textContent = '🏷️ ' + categorie.naam;
+  document.getElementById('details-agenda').textContent = '🗓️ ' + afspraak.agenda.naam;
   document.getElementById('details').showModal();
 }
 
@@ -298,15 +247,67 @@ document.getElementById('details').addEventListener('click', e => {
   if (e.target.id === 'details') e.target.close();
 });
 
-// ----- Legenda -----
+// ----- Legenda met de agenda's en hun kleur -----
 function tekenLegenda() {
-  const legenda = document.getElementById('legenda');
-  for (const categorie of Object.values(CATEGORIEEN)) {
+  const lijst = document.getElementById('legenda-agendas');
+  lijst.replaceChildren();
+  for (const agenda of agendas) {
     const item = maak('span');
     const bolletje = maak('i', 'bolletje');
-    bolletje.style.setProperty('--kleur', categorie.kleur);
-    item.append(bolletje, categorie.naam);
-    legenda.append(item);
+    bolletje.style.setProperty('--kleur', agenda.kleur);
+    item.append(bolletje, agenda.naam);
+    lijst.append(item);
+  }
+  document.getElementById('uitloggen').hidden = !isIngelogd();
+}
+
+function zetStatus(tekst, isFout = false) {
+  const status = document.getElementById('status');
+  status.textContent = tekst;
+  status.classList.toggle('fout', isFout);
+}
+
+// ----- Afspraken van de week in beeld ophalen -----
+async function laadWeek({ opnieuw = false } = {}) {
+  const inlogbalk = document.getElementById('inlogbalk');
+  if (!isIngelogd()) {
+    inlogbalk.hidden = false;
+    agendas = [];
+    afspraken = [];
+    weekCache.clear();
+    tekenLegenda();
+    teken();
+    return;
+  }
+  inlogbalk.hidden = true;
+  if (opnieuw) weekCache.clear();
+
+  const maandag = maandagVan(staat.anker);
+  const sleutel = maandag.toDateString();
+  if (weekCache.has(sleutel)) {
+    afspraken = weekCache.get(sleutel);
+    teken();
+    return;
+  }
+
+  const nummer = ++laadNummer;
+  zetStatus('Laden…');
+  try {
+    if (opnieuw || agendas.length === 0) {
+      agendas = await haalAgendas();
+      tekenLegenda();
+    }
+    const lijst = await haalAfspraken(agendas, maandag, plusDagen(maandag, 7));
+    weekCache.set(sleutel, lijst);
+    if (nummer !== laadNummer) return; // intussen naar een andere week gegaan
+    afspraken = lijst;
+    zetStatus('');
+    teken();
+  } catch (fout) {
+    if (nummer !== laadNummer) return;
+    zetStatus('');
+    if (fout instanceof NietIngelogdFout) laadWeek(); // toont de inlogknop
+    else zetStatus(fout.message, true);
   }
 }
 
@@ -330,6 +331,7 @@ function verschuif(richting) {
   const stap = staat.aantalDagen === 1 ? 1 : 7;
   staat.anker = plusDagen(staat.anker, richting * stap);
   teken();
+  laadWeek();
 }
 
 document.getElementById('vorige').addEventListener('click', () => verschuif(-1));
@@ -338,6 +340,7 @@ document.getElementById('vandaag').addEventListener('click', () => {
   staat.anker = beginVanDag(new Date());
   teken();
   scrollNaarBegin();
+  laadWeek();
 });
 
 document.querySelectorAll('.weergave .knop').forEach(knop => {
@@ -352,7 +355,30 @@ document.querySelectorAll('.weergave .knop').forEach(knop => {
     staat.aantalDagen = nieuw;
     bewaarAantalDagen();
     teken();
+    laadWeek();
   });
+});
+
+// ----- Inloggen en uitloggen -----
+document.getElementById('inloggen').addEventListener('click', async () => {
+  const melding = document.getElementById('inlogmelding');
+  melding.textContent = '';
+  try {
+    await logIn();
+    await laadWeek({ opnieuw: true });
+  } catch (fout) {
+    melding.textContent = fout.message;
+  }
+});
+
+document.getElementById('uitloggen').addEventListener('click', () => {
+  logUit();
+  laadWeek();
+});
+
+// Als je terugkomt in de app: afspraken verversen (bijv. na een wijziging op je telefoon)
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'visible') laadWeek({ opnieuw: true });
 });
 
 // Opnieuw meten als het scherm draait of het venster groter/kleiner wordt
@@ -367,6 +393,6 @@ if ('serviceWorker' in navigator) {
 }
 
 // ----- Starten -----
-tekenLegenda();
 teken();
 scrollNaarBegin();
+laadWeek();

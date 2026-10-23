@@ -80,15 +80,42 @@ body {
 }
 #weeknummer { color: var(--zacht); font-size: .85rem; white-space: nowrap; }
 
+/* ===== Inlogbalk ===== */
+.inlogbalk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem 1rem;
+  padding: .8rem 1rem;
+  background: var(--vandaag);
+  border-bottom: 1px solid var(--lijn);
+}
+.inlogbalk[hidden] { display: none; }
+.inlogbalk p { margin: 0; }
+.melding { color: var(--nu); font-size: .85rem; }
+.melding:empty { display: none; }
+
 /* ===== Legenda ===== */
 .legenda {
   display: flex;
-  gap: 1rem;
+  align-items: center;
+  gap: .5rem 1rem;
   padding: .35rem 1rem;
   font-size: .8rem;
   color: var(--zacht);
 }
-.legenda span { display: inline-flex; align-items: center; gap: .35rem; }
+.legenda-agendas { display: flex; flex-wrap: wrap; gap: .25rem 1rem; flex: 1; min-width: 0; }
+.legenda-agendas span { display: inline-flex; align-items: center; gap: .35rem; }
+.status.fout { color: var(--nu); }
+.tekstknop {
+  font: inherit;
+  background: none;
+  border: 0;
+  padding: 0;
+  color: var(--groen);
+  cursor: pointer;
+  text-decoration: underline;
+}
 .bolletje { width: .7rem; height: .7rem; border-radius: 50%; background: var(--kleur); flex: none; }
 
 /* ===== Agenda: de scrollbare ruimte ===== */
