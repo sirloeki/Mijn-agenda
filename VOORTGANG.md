@@ -15,6 +15,8 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
    - [x] 6d. Client-ID (inlogsleutel voor de app) maken (type Web application, origin `https://sirloeki.github.io`)
    - [x] 6e. Inloggen en afspraken lezen in de app bouwen (inloggen op de telefoon werkt)
    - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
+     - [x] Ronde 1: overzichtspagina gebouwd (`importeren.html`), nog uitvoeren met het echte bestand
+     - [ ] Ronde 2: keuzes maken (vanaf welke datum, welke categorieën) en overzetten naar Google
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen
 
@@ -49,6 +51,12 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - De voorbeeldafspraken zijn weg; de app toont nu de aangevinkte agenda's uit Google, in hun Google-kleur.
   - Bij terugkeren naar de app worden de afspraken ververst.
 
+- Importeerhulp, ronde 1 (stap 6f):
+  - Waarom: Google Agenda importeert via de gewone knop maximaal 1 MB; ons bestand is 167 MB.
+  - `ics.js`: leest een .ics-bestand stukje voor stukje (ook heel grote bestanden), slaat bijlagen en HTML-tekst over.
+  - `importeren.html` + `importeren.js`: overzicht van aantallen per categorie en per jaar. Verandert nog niets in Google.
+  - Te openen via de link "Importeren" in de app. Het bestand blijft op het apparaat.
+
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
 - **Uren:** 07:00–22:00 in beeld; vroeger en later bereikbaar door te scrollen.
@@ -64,4 +72,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 6: koppeling met Google Calendar (Google Cloud-project, inloggen met Google, .ics importeren).
+Stap 6f ronde 1 uitvoeren met het echte .ics-bestand (op de laptop), daarna keuzes maken voor ronde 2.

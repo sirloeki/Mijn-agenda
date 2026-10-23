@@ -4,13 +4,16 @@
 // internet te halen; lukt dat niet, dan gebruiken we de bewaarde kopie.
 // =====================================================================
 
-const CACHE = 'mijn-agenda-v4';
+const CACHE = 'mijn-agenda-v5';
 const BESTANDEN = [
   './',
   './index.html',
   './style.css',
   './app.js',
   './google.js',
+  './ics.js',
+  './importeren.html',
+  './importeren.js',
   './manifest.webmanifest',
   './iconen/icoon.svg',
   './iconen/icoon-192.png',

@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Importeren – Mijn Agenda</title>
+  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121512" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="style.css">
+  <link rel="icon" href="iconen/icoon.svg" type="image/svg+xml">
+</head>
+<body class="pagina">
+  <header class="balk">
+    <a class="knop" href="./">&#8249; Agenda</a>
+    <div class="periode"><h1>Outlook-agenda importeren</h1></div>
+  </header>
+
+  <main class="inhoud">
+    <section>
+      <h2>Ronde 1: bekijken</h2>
+      <p>Kies je .ics-bestand. De app maakt een overzicht van wat erin staat.
+        Er verandert nog <strong>niets</strong> in je Google Agenda.</p>
+      <p class="zacht">🔒 Het bestand wordt alleen op dit apparaat gelezen. Het wordt nergens naartoe gestuurd.</p>
+
+      <label class="knop actief bestandknop">
+        Bestand kiezen
+        <input id="bestand" type="file" accept=".ics,text/calendar">
+      </label>
+
+      <div id="voortgang" class="voortgang" hidden>
+        <div id="voortgang-balk"></div>
+      </div>
+      <p id="melding" class="zacht"></p>
+    </section>
+
+    <section id="overzicht" hidden>
+      <h2>Wat staat erin?</h2>
+      <div id="kaarten" class="kaarten"></div>
+
+      <h3>Per categorie</h3>
+      <p class="zacht">"Nog actueel" = afspraken vanaf vandaag, plus herhalende afspraken die nog doorlopen.</p>
+      <div class="tabel-ruimte"><table id="tabel-categorie"></table></div>
+
+      <h3>Per jaar</h3>
+      <p class="zacht">Een herhalende afspraak telt mee in het jaar waarin hij begon.</p>
+      <div class="tabel-ruimte"><table id="tabel-jaar"></table></div>
+    </section>
+  </main>
+
+  <script src="ics.js"></script>
+  <script src="importeren.js"></script>
+</body>
+</html>

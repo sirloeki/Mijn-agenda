@@ -271,3 +271,25 @@ dialog form { text-align: right; margin-top: 1rem; }
   :root { --tijdbreedte: 2.3rem; }
   .afspraak { font-size: .66rem; padding: 1px 2px; }
 }
+
+/* ===== Importeerpagina ===== */
+body.pagina { display: block; height: auto; }
+a.knop { text-decoration: none; }
+.inhoud { max-width: 52rem; margin: 0 auto; padding: 1rem; }
+.inhoud h2 { font-size: 1.15rem; margin: 1rem 0 .5rem; }
+.inhoud h3 { font-size: 1rem; margin: 1.5rem 0 .25rem; }
+.zacht { color: var(--zacht); font-size: .9rem; }
+.bestandknop { display: inline-block; margin: .5rem 0; }
+.bestandknop input { display: none; }
+.voortgang { height: .6rem; border-radius: 999px; background: var(--vlak); overflow: hidden; margin: .75rem 0; }
+.voortgang[hidden] { display: none; }
+#voortgang-balk { height: 100%; width: 0; background: var(--groen); transition: width .2s; }
+.kaarten { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: .6rem; }
+.kaart { background: var(--vlak); border-radius: 12px; padding: .7rem .8rem; }
+.kaart b { display: block; font-size: 1.3rem; }
+.kaart span { color: var(--zacht); font-size: .8rem; }
+.tabel-ruimte { overflow-x: auto; }
+.inhoud table { border-collapse: collapse; font-size: .85rem; min-width: 100%; }
+.inhoud th, .inhoud td { padding: .35rem .6rem; border-bottom: 1px solid var(--lijn); text-align: right; white-space: nowrap; }
+.inhoud th:first-child, .inhoud td:first-child { text-align: left; }
+.inhoud th { color: var(--zacht); font-weight: 600; }
