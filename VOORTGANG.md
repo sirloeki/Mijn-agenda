@@ -6,7 +6,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 1. [x] Plan en vragen
 2. [x] GitHub-project opzetten (repository `Mijn-agenda` bestaat al)
 3. [x] Eerste versie: weekweergave met voorbeeldafspraken
-4. [ ] Online zetten via GitHub Pages en testen op telefoon
+4. [x] Online zetten via GitHub Pages en testen op telefoon
 5. [ ] Installeerbaar maken als app met icoon (PWA)
 6. [ ] Koppeling met Google Calendar
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
@@ -23,6 +23,10 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
     rode lijn voor het huidige tijdstip, overlappende afspraken naast elkaar,
     tik op een afspraak voor details, gekozen aantal dagen wordt onthouden.
   - Afspraken zijn nog nepvoorbeelden (categorieën Werk, Privé, Reizen).
+- Online gezet (stap 4): project is openbaar gemaakt en GitHub Pages staat aan (branch `main`, map `/ (root)`).
+  - Webadres: https://sirloeki.github.io/Mijn-agenda/
+  - Werkt op de telefoon. Nog alleen bekijken; toevoegen/aanpassen komt in stap 7.
+  - Let op: GitHub Pages toont wat er op `main` staat. Nieuwe versies moeten dus naar `main`.
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
@@ -31,10 +35,12 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 - **Hele-dag-afspraken:** in een aparte strook bovenaan, zoals in Outlook.
 - **Opslag:** afspraken staan in Google Calendar; de app leest en schrijft via de Google Calendar API.
 - **Hosting:** gratis via GitHub Pages.
+- **Rol van het .ics-bestand:** wordt één keer geïmporteerd in Google Calendar (stap 6). Daarna is
+  Google Calendar de echte agenda; het bestand in Drive is alleen nog een reservekopie.
 - **Kleuren:** groen als hoofdkleur voor de app en het icoon.
 - **Categorieën:** zoals in Outlook, bijv. Privé en Reizen, elk met een eigen kleur.
   Google Calendar kent geen Outlook-categorieën. Bij stap 6 kiezen we hoe we dat oplossen
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 4: de app online zetten via GitHub Pages en testen op de telefoon.
+Stap 5: installeerbaar maken als app met eigen icoon (PWA).
