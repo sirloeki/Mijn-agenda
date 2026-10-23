@@ -13,7 +13,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
    - [x] 6b. Google Calendar API aanzetten
    - [x] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker (External, status Testing laten staan)
    - [x] 6d. Client-ID (inlogsleutel voor de app) maken (type Web application, origin `https://sirloeki.github.io`)
-   - [~] 6e. Inloggen en afspraken lezen in de app bouwen (gebouwd, nog testen met echte Google op de telefoon)
+   - [x] 6e. Inloggen en afspraken lezen in de app bouwen (inloggen op de telefoon werkt)
    - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen

@@ -381,8 +381,14 @@ document.addEventListener('visibilitychange', () => {
   if (document.visibilityState === 'visible') laadWeek({ opnieuw: true });
 });
 
-// Opnieuw meten als het scherm draait of het venster groter/kleiner wordt
-window.addEventListener('resize', pasUurHoogteAan);
+// Opnieuw meten als de ruimte voor de agenda verandert (scherm draait, inlogbalk verdwijnt, ...).
+// We blijven daarbij naar hetzelfde tijdstip kijken.
+new ResizeObserver(() => {
+  const oudeHoogte = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--uur'));
+  const urenBoven = agendaEl.scrollTop / oudeHoogte;
+  const nieuweHoogte = pasUurHoogteAan();
+  agendaEl.scrollTop = urenBoven * nieuweHoogte;
+}).observe(agendaEl);
 
 // Elke minuut de rode "nu"-lijn bijwerken
 setInterval(teken, 60 * 1000);
