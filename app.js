@@ -361,6 +361,11 @@ window.addEventListener('resize', pasUurHoogteAan);
 // Elke minuut de rode "nu"-lijn bijwerken
 setInterval(teken, 60 * 1000);
 
+// ----- Installeerbaar maken (PWA) -----
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js');
+}
+
 // ----- Starten -----
 tekenLegenda();
 teken();

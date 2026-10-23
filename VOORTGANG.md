@@ -7,7 +7,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 2. [x] GitHub-project opzetten (repository `Mijn-agenda` bestaat al)
 3. [x] Eerste versie: weekweergave met voorbeeldafspraken
 4. [x] Online zetten via GitHub Pages en testen op telefoon
-5. [ ] Installeerbaar maken als app met icoon (PWA)
+5. [x] Installeerbaar maken als app met icoon (PWA)
 6. [ ] Koppeling met Google Calendar
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen
@@ -27,6 +27,11 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - Webadres: https://sirloeki.github.io/Mijn-agenda/
   - Werkt op de telefoon. Nog alleen bekijken; toevoegen/aanpassen komt in stap 7.
   - Let op: GitHub Pages toont wat er op `main` staat. Nieuwe versies moeten dus naar `main`.
+- Installeerbaar gemaakt (stap 5):
+  - `manifest.webmanifest`: naam, kleuren en iconen van de app
+  - `sw.js` (service worker): maakt installeren mogelijk en laat de app ook zonder internet openen.
+    Haalt altijd eerst de nieuwste versie op; bewaarde kopie alleen als er geen internet is.
+  - `iconen/`: groen agenda-icoon (`icoon.svg` is het origineel, de PNG's zijn daarvan gemaakt)
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
@@ -43,4 +48,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 5: installeerbaar maken als app met eigen icoon (PWA).
+Stap 6: koppeling met Google Calendar (Google Cloud-project, inloggen met Google, .ics importeren).

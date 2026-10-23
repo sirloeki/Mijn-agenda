@@ -1,0 +1,16 @@
+{
+  "name": "Mijn Agenda",
+  "short_name": "Agenda",
+  "description": "Mijn persoonlijke agenda met weekweergave",
+  "lang": "nl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#ffffff",
+  "theme_color": "#2e7d32",
+  "icons": [
+    { "src": "iconen/icoon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "iconen/icoon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "iconen/icoon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
