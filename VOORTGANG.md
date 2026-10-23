@@ -8,7 +8,13 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 3. [x] Eerste versie: weekweergave met voorbeeldafspraken
 4. [x] Online zetten via GitHub Pages en testen op telefoon
 5. [x] Installeerbaar maken als app met icoon (PWA)
-6. [ ] Koppeling met Google Calendar
+6. [ ] Koppeling met Google Calendar (bezig)
+   - [ ] 6a. Google Cloud-project aanmaken
+   - [ ] 6b. Google Calendar API aanzetten
+   - [ ] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker
+   - [ ] 6d. Client-ID (inlogsleutel voor de app) maken
+   - [ ] 6e. Inloggen en afspraken lezen in de app bouwen
+   - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen
 
@@ -31,6 +37,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - `manifest.webmanifest`: naam, kleuren en iconen van de app
   - `sw.js` (service worker): maakt installeren mogelijk en laat de app ook zonder internet openen.
     Haalt altijd eerst de nieuwste versie op; bewaarde kopie alleen als er geen internet is.
+  - App staat geïnstalleerd op de telefoon (via de echte Chrome-app, niet via een link in een andere app).
   - `iconen/`: app-icoon in Fortuna Sittard-stijl: geel agendablaadje met voetbal op groen
     (eigen ontwerp, niet het officiële clublogo). `icoon.svg` is het origineel, de PNG's zijn daarvan gemaakt.
 
