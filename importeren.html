@@ -45,9 +45,44 @@
       <p class="zacht">Een herhalende afspraak telt mee in het jaar waarin hij begon.</p>
       <div class="tabel-ruimte"><table id="tabel-jaar"></table></div>
     </section>
+
+    <section id="ronde2" hidden>
+      <h2>Ronde 2: overzetten naar Google</h2>
+      <p>
+        <label>Afspraken vanaf
+          <input id="vanaf" type="date" value="2026-01-01">
+        </label>
+      </p>
+      <div id="plan" class="kaarten"></div>
+      <ul class="zacht uitleg">
+        <li>Er komen twee nieuwe agenda's in Google: <b>Werk (Outlook)</b> en <b>Reizen</b> (voor de categorie Travelling).</li>
+        <li>Herhalende afspraken die vóór de gekozen datum begonnen maar nog doorlopen, gaan ook mee.</li>
+        <li>Er worden <b>geen uitnodigingen of e-mails</b> verstuurd; deelnemers worden niet overgenomen.</li>
+        <li>Geïmporteerde afspraken krijgen geen herinneringen (meldingen).</li>
+        <li>Gaat er iets mis of stopt het halverwege? Klik gewoon nog eens op Start: wat al in Google staat, wordt overgeslagen.</li>
+      </ul>
+
+      <div id="inlog-import" class="inlogbalk" hidden>
+        <p>Log eerst in met Google.</p>
+        <button id="inloggen" class="knop actief">Inloggen met Google</button>
+      </div>
+      <button id="start" class="knop actief">Start overzetten</button>
+
+      <div id="voortgang2" class="voortgang" hidden><div id="voortgang2-balk"></div></div>
+      <p id="melding2"></p>
+
+      <div id="mislukt" hidden>
+        <h3>Niet gelukt</h3>
+        <p class="zacht">Deze afspraken kon Google niet overnemen. Je kunt ze zo nodig met de hand toevoegen.</p>
+        <div class="tabel-ruimte"><table id="tabel-mislukt"></table></div>
+      </div>
+    </section>
   </main>
 
+  <script src="https://accounts.google.com/gsi/client" async></script>
+  <script src="google.js"></script>
   <script src="ics.js"></script>
+  <script src="omzetten.js"></script>
   <script src="importeren.js"></script>
 </body>
 </html>

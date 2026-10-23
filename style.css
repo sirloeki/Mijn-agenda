@@ -283,7 +283,12 @@ a.knop { text-decoration: none; }
 .bestandknop input { display: none; }
 .voortgang { height: .6rem; border-radius: 999px; background: var(--vlak); overflow: hidden; margin: .75rem 0; }
 .voortgang[hidden] { display: none; }
-#voortgang-balk { height: 100%; width: 0; background: var(--groen); transition: width .2s; }
+.voortgang > div { height: 100%; width: 0; background: var(--groen); transition: width .2s; }
+.uitleg { padding-left: 1.2rem; }
+.uitleg li { margin: .25rem 0; }
+#vanaf { font: inherit; padding: .3rem .5rem; margin-left: .4rem; border: 1px solid var(--lijn); border-radius: 8px; background: var(--achtergrond); color: var(--tekst); }
+#start { margin-top: .5rem; }
+#start:disabled { opacity: .5; cursor: default; }
 .kaarten { display: grid; grid-template-columns: repeat(auto-fill, minmax(9rem, 1fr)); gap: .6rem; }
 .kaart { background: var(--vlak); border-radius: 12px; padding: .7rem .8rem; }
 .kaart b { display: block; font-size: 1.3rem; }

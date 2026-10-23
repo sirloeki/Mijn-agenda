@@ -81,19 +81,43 @@ function logUit() {
   bewaarToegang(null);
 }
 
-// Eén verzoek aan de Google Agenda-API
-async function googleVraag(pad, parameters = {}) {
+// Een foutmelding van Google, met het statusnummer erbij (bijv. 409 = bestaat al)
+class GoogleFout extends Error {
+  constructor(status, bericht, reden) {
+    super(bericht);
+    this.status = status;
+    this.reden = reden;
+  }
+}
+
+// Eén verzoek aan de Google Agenda-API.
+// Zonder 'methode' is het een opvraag (GET); met 'inhoud' sturen we gegevens mee.
+async function googleVraag(pad, parameters = {}, { methode = 'GET', inhoud } = {}) {
   if (!isIngelogd()) throw new NietIngelogdFout();
   const url = new URL(GOOGLE_API + pad);
   for (const [sleutel, waarde] of Object.entries(parameters)) url.searchParams.set(sleutel, waarde);
 
-  const antwoord = await fetch(url, { headers: { Authorization: `Bearer ${toegang.token}` } });
+  const opties = { method: methode, headers: { Authorization: `Bearer ${toegang.token}` } };
+  if (inhoud !== undefined) {
+    opties.headers['Content-Type'] = 'application/json';
+    opties.body = JSON.stringify(inhoud);
+  }
+  const antwoord = await fetch(url, opties);
   if (antwoord.status === 401) {
     logUit();
     throw new NietIngelogdFout();
   }
-  if (!antwoord.ok) throw new Error(`Google gaf een foutmelding (${antwoord.status}).`);
-  return antwoord.json();
+  if (!antwoord.ok) {
+    let bericht = `Google gaf een foutmelding (${antwoord.status}).`;
+    let reden = '';
+    try {
+      const fout = (await antwoord.json()).error;
+      if (fout && fout.message) bericht = `${fout.message} (${antwoord.status})`;
+      reden = fout?.errors?.[0]?.reason || '';
+    } catch (e) { /* geen uitleg meegestuurd */ }
+    throw new GoogleFout(antwoord.status, bericht, reden);
+  }
+  return antwoord.status === 204 ? null : antwoord.json();
 }
 
 // De agenda's die in Google Agenda aangevinkt staan

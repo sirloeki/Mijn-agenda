@@ -16,7 +16,11 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
    - [x] 6e. Inloggen en afspraken lezen in de app bouwen (inloggen op de telefoon werkt)
    - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
      - [x] Ronde 1: overzichtspagina gebouwd (`importeren.html`), nog uitvoeren met het echte bestand
-     - [ ] Ronde 2: keuzes maken (vanaf welke datum, welke categorieën) en overzetten naar Google
+     - [x] Ronde 1 uitgevoerd: 8.747 afspraken (2014–2028), 135 nog actueel, 182 herhalend, 0 bijlagen.
+           Bijna alles zonder categorie; alleen "Travelling" (166) komt echt voor.
+     - [x] Keuzes ronde 2: vanaf 1 jan 2026; agenda "Werk (Outlook)" voor alles, "Reizen" voor Travelling
+     - [x] Ronde 2 gebouwd (getest met nagebootste Google)
+     - [ ] Ronde 2 uitvoeren met het echte bestand
 7. [ ] Afspraken toevoegen, aanpassen en verwijderen
 8. [ ] Verfijnen met extra wensen
 
@@ -56,6 +60,13 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - `ics.js`: leest een .ics-bestand stukje voor stukje (ook heel grote bestanden), slaat bijlagen en HTML-tekst over.
   - `importeren.html` + `importeren.js`: overzicht van aantallen per categorie en per jaar. Verandert nog niets in Google.
   - Te openen via de link "Importeren" in de app. Het bestand blijft op het apparaat.
+- Importeerhulp, ronde 2:
+  - `omzetten.js`: zet .ics-afspraken om naar Google (Windows-tijdzones → internationale namen,
+    herhalingen, uitzonderingen, hele-dag-afspraken).
+  - Maakt agenda's "Werk (Outlook)" (groen) en "Reizen" (blauwgroen) aan als ze nog niet bestaan.
+  - Elke afspraak krijgt een vaste ID, dus opnieuw starten maakt geen dubbele afspraken.
+  - Geen uitnodigingen/e-mails (sendUpdates=none), geen deelnemers, geen herinneringen.
+  - Bij "te veel verzoeken" wacht hij even en probeert opnieuw.
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
@@ -72,4 +83,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 6f ronde 1 uitvoeren met het echte .ics-bestand (op de laptop), daarna keuzes maken voor ronde 2.
+Stap 6f ronde 2 uitvoeren met het echte bestand (op de laptop), resultaat controleren in de app.
