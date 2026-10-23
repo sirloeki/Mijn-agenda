@@ -5,7 +5,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 ## Stappenplan
 1. [x] Plan en vragen
 2. [x] GitHub-project opzetten (repository `Mijn-agenda` bestaat al)
-3. [ ] Eerste versie: weekweergave met voorbeeldafspraken
+3. [x] Eerste versie: weekweergave met voorbeeldafspraken
 4. [ ] Online zetten via GitHub Pages en testen op telefoon
 5. [ ] Installeerbaar maken als app met icoon (PWA)
 6. [ ] Koppeling met Google Calendar
@@ -15,6 +15,14 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 ## Gedaan
 - Outlook-agenda geëxporteerd als .ics en veilig bewaard in Google Drive (niet in GitHub, want privé).
 - Het .ics-bestand is nog NIET in Google Calendar geïmporteerd. Dat doen we bij stap 6.
+- Eerste versie van de app gebouwd (stap 3):
+  - `index.html`: de opbouw van de pagina
+  - `style.css`: de opmaak (kleuren, licht/donker, telefoon/laptop)
+  - `app.js`: de werking (weekweergave, knoppen, voorbeeldafspraken)
+  - Kan nu: 1/5/7 dagen, vorige/volgende/Vandaag, weeknummer, hele-dag-strook,
+    rode lijn voor het huidige tijdstip, overlappende afspraken naast elkaar,
+    tik op een afspraak voor details, gekozen aantal dagen wordt onthouden.
+  - Afspraken zijn nog nepvoorbeelden (categorieën Werk, Privé, Reizen).
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
@@ -29,4 +37,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 3: eerste versie van de weekweergave met voorbeeldafspraken (nog zonder Google).
+Stap 4: de app online zetten via GitHub Pages en testen op de telefoon.

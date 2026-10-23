@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="nl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Mijn Agenda</title>
+  <meta name="theme-color" content="#2e7d32" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#121512" media="(prefers-color-scheme: dark)">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- Bovenbalk: navigatie, periode en keuze voor het aantal dagen -->
+  <header class="balk">
+    <div class="navigatie">
+      <button id="vorige" class="knop rond" aria-label="Vorige">&#8249;</button>
+      <button id="vandaag" class="knop">Vandaag</button>
+      <button id="volgende" class="knop rond" aria-label="Volgende">&#8250;</button>
+    </div>
+    <div class="periode">
+      <h1 id="periode-tekst"></h1>
+      <span id="weeknummer"></span>
+    </div>
+    <div class="weergave" role="group" aria-label="Aantal dagen">
+      <button class="knop" data-dagen="1">1</button>
+      <button class="knop" data-dagen="5">5</button>
+      <button class="knop" data-dagen="7">7</button>
+    </div>
+  </header>
+
+  <!-- Legenda met de kleuren per categorie -->
+  <div id="legenda" class="legenda"></div>
+
+  <!-- Hier tekent app.js de agenda -->
+  <main id="agenda"></main>
+
+  <!-- Venster met de details van een afspraak -->
+  <dialog id="details">
+    <div class="details-kop">
+      <span id="details-kleur" class="bolletje"></span>
+      <h2 id="details-titel"></h2>
+    </div>
+    <p id="details-tijd"></p>
+    <p id="details-locatie"></p>
+    <p id="details-categorie"></p>
+    <form method="dialog">
+      <button class="knop">Sluiten</button>
+    </form>
+  </dialog>
+
+  <script src="app.js"></script>
+</body>
+</html>

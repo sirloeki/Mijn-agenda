@@ -1,0 +1,246 @@
+/* ===== Kleuren (licht) ===== */
+:root {
+  --groen: #2e7d32;
+  --groen-tekst: #ffffff;
+  --achtergrond: #ffffff;
+  --vlak: #f3f7f3;
+  --tekst: #1b1f1b;
+  --zacht: #5f6b5f;
+  --lijn: #dde5dd;
+  --lijn-half: #eef2ee;
+  --vandaag: #edf7ee;
+  --nu: #d32f2f;
+  --tijdbreedte: 2.75rem;
+  --uur: 48px; /* hoogte van één uur, app.js past dit aan het scherm aan */
+}
+
+/* ===== Kleuren (donker), volgt de instelling van de telefoon ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --groen: #66bb6a;
+    --groen-tekst: #0d1f0e;
+    --achtergrond: #121512;
+    --vlak: #1a1f1a;
+    --tekst: #e6ebe6;
+    --zacht: #9aa69a;
+    --lijn: #2b332b;
+    --lijn-half: #1e241e;
+    --vandaag: #182a1a;
+    --nu: #ef5350;
+  }
+}
+
+* { box-sizing: border-box; }
+
+html, body { margin: 0; height: 100%; }
+
+body {
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  background: var(--achtergrond);
+  color: var(--tekst);
+}
+
+/* ===== Knoppen ===== */
+.knop {
+  font: inherit;
+  font-size: .9rem;
+  padding: .4rem .8rem;
+  border: 1px solid var(--lijn);
+  border-radius: 999px;
+  background: var(--achtergrond);
+  color: var(--tekst);
+  cursor: pointer;
+}
+.knop:hover { background: var(--vlak); }
+.knop.rond { width: 2.2rem; padding: .4rem 0; font-size: 1.2rem; line-height: 1; }
+.knop.actief { background: var(--groen); color: var(--groen-tekst); border-color: var(--groen); }
+
+/* ===== Bovenbalk ===== */
+.balk {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: .5rem .75rem;
+  padding: .6rem 1rem;
+  border-bottom: 1px solid var(--lijn);
+}
+.navigatie, .weergave { display: flex; gap: .3rem; }
+.weergave .knop { min-width: 2.2rem; padding-inline: .6rem; }
+.periode { flex: 1; min-width: 0; display: flex; align-items: baseline; gap: .5rem; }
+.periode h1 {
+  margin: 0;
+  font-size: 1.05rem;
+  font-weight: 600;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+#weeknummer { color: var(--zacht); font-size: .85rem; white-space: nowrap; }
+
+/* ===== Legenda ===== */
+.legenda {
+  display: flex;
+  gap: 1rem;
+  padding: .35rem 1rem;
+  font-size: .8rem;
+  color: var(--zacht);
+}
+.legenda span { display: inline-flex; align-items: center; gap: .35rem; }
+.bolletje { width: .7rem; height: .7rem; border-radius: 50%; background: var(--kleur); flex: none; }
+
+/* ===== Agenda: de scrollbare ruimte ===== */
+#agenda { flex: 1; overflow-y: auto; position: relative; }
+
+/* Kop en raster delen dezelfde kolommen: tijden + één kolom per dag */
+.kop, .raster {
+  display: grid;
+  grid-template-columns: var(--tijdbreedte) repeat(var(--dagen), minmax(0, 1fr));
+}
+
+/* De kop (dagen + hele-dag-strook) blijft bovenaan staan tijdens scrollen */
+.kop {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  background: var(--achtergrond);
+  border-bottom: 1px solid var(--lijn);
+}
+.dagnaam {
+  text-align: center;
+  padding: .35rem 0 .25rem;
+  font-size: .75rem;
+  color: var(--zacht);
+  text-transform: lowercase;
+}
+.dagnaam b {
+  display: block;
+  margin: .1rem auto 0;
+  width: 1.9rem;
+  height: 1.9rem;
+  line-height: 1.9rem;
+  border-radius: 50%;
+  font-size: 1.05rem;
+  color: var(--tekst);
+}
+.dagnaam.vandaag { color: var(--groen); font-weight: 600; }
+.dagnaam.vandaag b { background: var(--groen); color: var(--groen-tekst); }
+
+.hoek { font-size: .65rem; color: var(--zacht); text-align: right; padding: .3rem .3rem 0 0; }
+
+.heledag {
+  min-height: 1.6rem;
+  padding: 2px 1px;
+  border-left: 1px solid var(--lijn);
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+  min-width: 0;
+}
+
+/* ===== Het raster met de uren ===== */
+.raster { height: calc(24 * var(--uur)); }
+.tijden { position: relative; }
+.tijd {
+  position: absolute;
+  right: .3rem;
+  transform: translateY(-50%);
+  font-size: .65rem;
+  color: var(--zacht);
+}
+.dag {
+  position: relative;
+  border-left: 1px solid var(--lijn);
+  /* hele uren als lijn, halve uren als lichtere lijn */
+  background-image:
+    repeating-linear-gradient(to bottom, var(--lijn) 0 1px, transparent 1px var(--uur)),
+    repeating-linear-gradient(to bottom, transparent 0 calc(var(--uur) / 2), var(--lijn-half) calc(var(--uur) / 2) calc(var(--uur) / 2 + 1px), transparent calc(var(--uur) / 2 + 1px) var(--uur));
+}
+.dag.vandaag { background-color: var(--vandaag); }
+
+/* Rode lijn voor het huidige tijdstip */
+.nu {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 2px;
+  background: var(--nu);
+  z-index: 2;
+  pointer-events: none;
+}
+.nu::before {
+  content: "";
+  position: absolute;
+  left: -5px;
+  top: -4px;
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: var(--nu);
+}
+
+/* ===== Afspraken ===== */
+.afspraak {
+  font: inherit;
+  text-align: left;
+  border: 0;
+  border-left: 3px solid var(--kleur);
+  border-radius: 5px;
+  background: color-mix(in srgb, var(--kleur) 24%, var(--achtergrond));
+  color: var(--tekst);
+  font-size: .72rem;
+  line-height: 1.2;
+  padding: 2px 4px;
+  overflow: hidden;
+  cursor: pointer;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-start;
+  hyphens: auto;
+}
+.afspraak:hover { background: color-mix(in srgb, var(--kleur) 38%, var(--achtergrond)); }
+.afspraak strong { display: block; font-weight: 600; overflow-wrap: anywhere; }
+.afspraak small { display: block; color: var(--zacht); }
+
+.raster .afspraak {
+  position: absolute;
+  z-index: 1;
+  box-shadow: 0 0 0 1px var(--achtergrond); /* dun randje tussen afspraken naast elkaar */
+}
+
+.heledag .afspraak {
+  white-space: nowrap;
+  text-overflow: ellipsis;
+  font-weight: 600;
+}
+
+/* ===== Venster met details ===== */
+dialog {
+  border: 0;
+  border-radius: 14px;
+  padding: 1.2rem 1.4rem;
+  width: min(92vw, 24rem);
+  background: var(--achtergrond);
+  color: var(--tekst);
+  box-shadow: 0 10px 40px rgba(0, 0, 0, .3);
+}
+dialog::backdrop { background: rgba(0, 0, 0, .35); }
+.details-kop { display: flex; align-items: center; gap: .6rem; }
+.details-kop .bolletje { width: .9rem; height: .9rem; }
+dialog h2 { margin: 0; font-size: 1.15rem; }
+dialog p { margin: .5rem 0; color: var(--zacht); }
+dialog p:empty { display: none; }
+dialog form { text-align: right; margin-top: 1rem; }
+
+/* ===== Smalle schermen (telefoon) ===== */
+@media (max-width: 600px) {
+  .balk { padding: .5rem .6rem; }
+  .periode { order: 3; flex-basis: 100%; }
+  .weergave { margin-left: auto; }
+  .legenda { padding: .25rem .6rem; }
+  :root { --tijdbreedte: 2.3rem; }
+  .afspraak { font-size: .66rem; padding: 1px 2px; }
+}
