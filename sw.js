@@ -4,7 +4,7 @@
 // internet te halen; lukt dat niet, dan gebruiken we de bewaarde kopie.
 // =====================================================================
 
-const CACHE = 'mijn-agenda-v8';
+const CACHE = 'mijn-agenda-v9';
 const BESTANDEN = [
   './',
   './index.html',
