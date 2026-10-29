@@ -70,11 +70,19 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - Geen uitnodigingen/e-mails (sendUpdates=none), geen deelnemers, geen herinneringen.
   - Bij "te veel verzoeken" wacht hij even en probeert opnieuw.
 
+- Bezet/vrij zichtbaar gemaakt (na stap 6):
+  - Google kent per afspraak "Bezet" of "Beschikbaar" (vrij). De app leest dat nu uit.
+  - Hele dag + bezet: vol gekleurd blok bovenaan én schuine strepen over de hele dagkolom (dag is geblokt).
+  - Vrij (alleen ter herinnering): lichte achtergrond met gekleurd randje. Geldt ook voor afspraken met een tijd.
+  - In het detailvenster staat "Bezet" of "Vrij".
+  - Aanpassen per afspraak: nu via de Google Agenda-app (potloodje → Bezet/Beschikbaar), straks ook in onze app (stap 7).
+
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
 - **Uren:** 07:00–22:00 in beeld; vroeger en later bereikbaar door te scrollen.
 - **Kleurstand:** automatisch licht/donker, zoals de telefoon is ingesteld.
 - **Hele-dag-afspraken:** in een aparte strook bovenaan, zoals in Outlook.
+- **Bezet/vrij:** bezet = vol blok (hele dag: plus gestreepte dagkolom); vrij = licht blok met gekleurde rand.
 - **Opslag:** afspraken staan in Google Calendar; de app leest en schrijft via de Google Calendar API.
 - **Hosting:** gratis via GitHub Pages.
 - **Rol van het .ics-bestand:** wordt één keer geïmporteerd in Google Calendar (stap 6). Daarna is

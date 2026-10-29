@@ -129,6 +129,7 @@ async function haalAgendas() {
       id: item.id,
       naam: item.summaryOverride || item.summary,
       kleur: item.backgroundColor,
+      tekstkleur: item.foregroundColor || '#ffffff',
       primair: !!item.primary,
     }))
     .sort((a, b) => b.primair - a.primair || a.naam.localeCompare(b.naam));
@@ -168,6 +169,8 @@ function naarAfspraak(item, agenda) {
     eind: heleDag ? leesDatum(item.end.date) : new Date(item.end.dateTime),
     heleDag,
     locatie: item.location || '',
+    // "Bezet" of "Beschikbaar" (vrij); Google noemt vrij 'transparent'
+    bezet: item.transparency !== 'transparent',
     agenda,
   };
 }

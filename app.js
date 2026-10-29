@@ -134,6 +134,13 @@ function teken() {
 
   for (const dag of dagen) {
     const kolom = maak('div', 'dag');
+    // Een hele-dag-afspraak op "bezet" blokt de hele dag: die dag krijgt schuine strepen
+    const morgen = plusDagen(dag, 1);
+    const blokker = afspraken.find(a => a.heleDag && a.bezet && a.start < morgen && a.eind > dag);
+    if (blokker) {
+      kolom.classList.add('geblokt');
+      kolom.style.setProperty('--kleur', blokker.agenda.kleur);
+    }
     if (zelfdeDag(dag, vandaag)) {
       kolom.classList.add('vandaag');
       const nu = maak('div', 'nu');
@@ -202,8 +209,9 @@ function afsprakenOpDag(dag) {
 }
 
 function maakAfspraakKnop(afspraak) {
-  const knop = maak('button', 'afspraak');
+  const knop = maak('button', afspraak.bezet ? 'afspraak' : 'afspraak vrij');
   knop.style.setProperty('--kleur', afspraak.agenda.kleur);
+  knop.style.setProperty('--tekstkleur', afspraak.agenda.tekstkleur);
   const titel = maak('strong');
   titel.textContent = afspraak.titel;
   knop.append(titel);
@@ -239,6 +247,9 @@ function toonDetails(afspraak) {
   document.getElementById('details-tijd').textContent = '🕒 ' + tijd;
   document.getElementById('details-locatie').textContent = afspraak.locatie ? '📍 ' + afspraak.locatie : '';
   document.getElementById('details-agenda').textContent = '🗓️ ' + afspraak.agenda.naam;
+  document.getElementById('details-status').textContent = afspraak.bezet
+    ? '⛔ Bezet (je bent niet beschikbaar)'
+    : '✅ Vrij (alleen ter herinnering)';
   document.getElementById('details').showModal();
 }
 

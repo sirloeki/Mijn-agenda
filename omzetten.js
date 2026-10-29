@@ -178,7 +178,9 @@ function naarGoogleAfspraak(afspraak) {
   const locatie = eersteTekst(afspraak, 'LOCATION').trim();
   if (locatie) google.location = locatie.slice(0, 1000);
   if (omschrijving) google.description = omschrijving.length > 4000 ? omschrijving.slice(0, 4000) + '…' : omschrijving;
-  if (eersteTekst(afspraak, 'TRANSP').toUpperCase() === 'TRANSPARENT') google.transparency = 'transparent';
+  // "Weergeven als: Vrij" in Outlook → "Beschikbaar" in Google
+  if (eersteTekst(afspraak, 'TRANSP').toUpperCase() === 'TRANSPARENT'
+    || eersteTekst(afspraak, 'X-MICROSOFT-CDO-BUSYSTATUS').toUpperCase() === 'FREE') google.transparency = 'transparent';
   if (['PRIVATE', 'CONFIDENTIAL'].includes(eersteTekst(afspraak, 'CLASS').toUpperCase())) google.visibility = 'private';
   if (eersteTekst(afspraak, 'STATUS').toUpperCase() === 'CANCELLED') google.status = 'cancelled';
   const regels = herhaalRegels(afspraak);

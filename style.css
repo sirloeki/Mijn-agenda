@@ -242,6 +242,34 @@ body {
   white-space: nowrap;
   text-overflow: ellipsis;
   font-weight: 600;
+  display: block;
+}
+
+/* Bezet, hele dag: vol gekleurd blok */
+.heledag .afspraak:not(.vrij) {
+  background: var(--kleur);
+  color: var(--tekstkleur, #fff);
+}
+.heledag .afspraak:not(.vrij):hover { filter: brightness(1.08); }
+
+/* Vrij (alleen ter herinnering): lichte achtergrond met gekleurd randje */
+.afspraak.vrij,
+.afspraak.vrij:hover {
+  background: var(--achtergrond);
+  box-shadow: inset 0 0 0 1px var(--kleur);
+}
+.afspraak.vrij:hover { background: color-mix(in srgb, var(--kleur) 10%, var(--achtergrond)); }
+.raster .afspraak.vrij { box-shadow: inset 0 0 0 1px var(--kleur), 0 0 0 1px var(--achtergrond); }
+
+/* Dag die geblokt is door een hele-dag-afspraak op "bezet": schuine strepen */
+.dag.geblokt::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: repeating-linear-gradient(135deg,
+    color-mix(in srgb, var(--kleur) 16%, transparent) 0 6px,
+    transparent 6px 14px);
 }
 
 /* ===== Venster met details ===== */
