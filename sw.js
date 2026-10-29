@@ -4,7 +4,7 @@
 // internet te halen; lukt dat niet, dan gebruiken we de bewaarde kopie.
 // =====================================================================
 
-const CACHE = 'mijn-agenda-v9';
+const CACHE = 'mijn-agenda-v10';
 const BESTANDEN = [
   './',
   './index.html',
@@ -15,6 +15,7 @@ const BESTANDEN = [
   './importeren.html',
   './importeren.js',
   './omzetten.js',
+  './bewerken.js',
   './manifest.webmanifest',
   './iconen/icoon.svg',
   './iconen/icoon-192.png',

@@ -1,5 +1,6 @@
 /* ===== Kleuren (licht) ===== */
 :root {
+  color-scheme: light dark; /* knoppen van de browser zelf (datum, vinkje) volgen licht/donker */
   --groen: #2e7d32;
   --groen-tekst: #ffffff;
   --achtergrond: #ffffff;
@@ -31,6 +32,9 @@
 }
 
 * { box-sizing: border-box; }
+
+/* Verborgen is écht verborgen, ook als een element een eigen 'display' heeft */
+[hidden] { display: none !important; }
 
 html, body { margin: 0; height: 100%; }
 
@@ -286,7 +290,54 @@ dialog::backdrop { background: rgba(0, 0, 0, .35); }
 dialog h2 { margin: 0; font-size: 1.15rem; }
 dialog p { margin: .5rem 0; color: var(--zacht); }
 dialog p:empty { display: none; }
-dialog form { text-align: right; margin-top: 1rem; }
+dialog .notitie { white-space: pre-line; color: var(--tekst); font-size: .9rem; max-height: 12rem; overflow: auto; }
+
+/* Rij met knoppen onderin een venster */
+.knoppen { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: .5rem; margin-top: 1rem; }
+.knop.gevaar { color: var(--nu); border-color: color-mix(in srgb, var(--nu) 40%, var(--lijn)); }
+.knop:disabled { opacity: .6; cursor: default; }
+
+/* Ronde +knop rechtsonder */
+.plusknop {
+  position: fixed;
+  right: max(1rem, env(safe-area-inset-right));
+  bottom: max(1rem, env(safe-area-inset-bottom));
+  z-index: 5;
+  width: 3.5rem;
+  height: 3.5rem;
+  border-radius: 50%;
+  border: 0;
+  background: var(--groen);
+  color: var(--groen-tekst);
+  font-size: 2rem;
+  line-height: 1;
+  box-shadow: 0 4px 14px rgba(0, 0, 0, .3);
+  cursor: pointer;
+}
+
+/* Formulier voor een afspraak */
+dialog.formulier { width: min(94vw, 30rem); max-height: 92dvh; overflow: auto; }
+.formulier h2 { margin-bottom: .75rem; }
+.veld { display: flex; flex-direction: column; gap: .2rem; margin: .5rem 0; font-size: .8rem; color: var(--zacht); flex: 1; min-width: 0; }
+.veld input, .veld select, .veld textarea {
+  font: inherit;
+  font-size: 1rem;
+  color: var(--tekst);
+  background: var(--achtergrond);
+  border: 1px solid var(--lijn);
+  border-radius: 8px;
+  padding: .45rem .55rem;
+  width: 100%;
+  min-width: 0;
+}
+.veld input:focus, .veld select:focus, .veld textarea:focus { outline: 2px solid var(--groen); outline-offset: -1px; }
+.veld textarea { resize: vertical; }
+.veld select:disabled { opacity: .6; }
+.rij { display: flex; gap: .6rem; }
+.tijdveld { flex: 0 0 7.5rem; }
+.schakel { display: flex; align-items: center; gap: .5rem; margin: .5rem 0; }
+.schakel input { width: 1.2rem; height: 1.2rem; accent-color: var(--groen); }
+.formulier .melding .tekstknop { margin-left: .3rem; }
 
 /* ===== Smalle schermen (telefoon) ===== */
 @media (max-width: 600px) {

@@ -131,6 +131,8 @@ async function haalAgendas() {
       kleur: item.backgroundColor,
       tekstkleur: item.foregroundColor || '#ffffff',
       primair: !!item.primary,
+      // mag je er afspraken in zetten? (bij "Feestdagen in Nederland" bijvoorbeeld niet)
+      schrijfbaar: item.accessRole === 'owner' || item.accessRole === 'writer',
     }))
     .sort((a, b) => b.primair - a.primair || a.naam.localeCompare(b.naam));
 }
@@ -171,6 +173,8 @@ function naarAfspraak(item, agenda) {
     locatie: item.location || '',
     // "Bezet" of "Beschikbaar" (vrij); Google noemt vrij 'transparent'
     bezet: item.transparency !== 'transparent',
+    notitie: item.description || '',
+    reeksId: item.recurringEventId || null, // hoort bij een herhalende afspraak
     agenda,
   };
 }
@@ -179,4 +183,32 @@ function naarAfspraak(item, agenda) {
 function leesDatum(tekst) {
   const [jaar, maand, dag] = tekst.split('-').map(Number);
   return new Date(jaar, maand - 1, dag);
+}
+
+// ----- Afspraken toevoegen, aanpassen en verwijderen -----
+// 'sendUpdates: none': er gaan nooit e-mails of uitnodigingen naar anderen
+
+function afspraakPad(agendaId, afspraakId = '') {
+  return `/calendars/${encodeURIComponent(agendaId)}/events${afspraakId ? '/' + encodeURIComponent(afspraakId) : ''}`;
+}
+
+function haalEenAfspraak(agendaId, afspraakId) {
+  return googleVraag(afspraakPad(agendaId, afspraakId));
+}
+
+function maakNieuweAfspraak(agendaId, inhoud) {
+  return googleVraag(afspraakPad(agendaId), { sendUpdates: 'none' }, { methode: 'POST', inhoud });
+}
+
+function wijzigAfspraak(agendaId, afspraakId, inhoud) {
+  return googleVraag(afspraakPad(agendaId, afspraakId), { sendUpdates: 'none' }, { methode: 'PATCH', inhoud });
+}
+
+function verplaatsAfspraak(agendaId, afspraakId, naarAgendaId) {
+  return googleVraag(`${afspraakPad(agendaId, afspraakId)}/move`,
+    { destination: naarAgendaId, sendUpdates: 'none' }, { methode: 'POST' });
+}
+
+function verwijderAfspraak(agendaId, afspraakId) {
+  return googleVraag(afspraakPad(agendaId, afspraakId), { sendUpdates: 'none' }, { methode: 'DELETE' });
 }

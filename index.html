@@ -48,6 +48,9 @@
   <!-- Hier tekent app.js de agenda -->
   <main id="agenda"></main>
 
+  <!-- Knop om een nieuwe afspraak te maken -->
+  <button id="nieuw" class="plusknop" aria-label="Nieuwe afspraak" hidden>+</button>
+
   <!-- Venster met de details van een afspraak -->
   <dialog id="details">
     <div class="details-kop">
@@ -55,16 +58,104 @@
       <h2 id="details-titel"></h2>
     </div>
     <p id="details-tijd"></p>
+    <p id="details-herhaling"></p>
     <p id="details-locatie"></p>
     <p id="details-agenda"></p>
     <p id="details-status"></p>
-    <form method="dialog">
-      <button class="knop">Sluiten</button>
+    <p id="details-notitie" class="notitie"></p>
+    <div class="knoppen">
+      <button id="details-verwijderen" class="knop gevaar">Verwijderen</button>
+      <button id="details-bewerken" class="knop">Bewerken</button>
+      <button id="details-sluiten" class="knop actief">Sluiten</button>
+    </div>
+  </dialog>
+
+  <!-- Formulier voor een nieuwe of aangepaste afspraak -->
+  <dialog id="formulier" class="formulier">
+    <form id="afspraak-formulier" novalidate>
+      <h2 id="formulier-titel">Nieuwe afspraak</h2>
+
+      <label class="veld">Titel
+        <input id="f-titel" type="text" autocomplete="off" required>
+      </label>
+
+      <label class="schakel">
+        <input id="f-heledag" type="checkbox"> Hele dag
+      </label>
+
+      <div class="rij">
+        <label class="veld">Begin
+          <input id="f-startdatum" type="date" required>
+        </label>
+        <label class="veld tijdveld">&nbsp;
+          <input id="f-starttijd" type="time" step="300">
+        </label>
+      </div>
+      <div class="rij">
+        <label class="veld">Eind
+          <input id="f-einddatum" type="date" required>
+        </label>
+        <label class="veld tijdveld">&nbsp;
+          <input id="f-eindtijd" type="time" step="300">
+        </label>
+      </div>
+
+      <div class="rij">
+        <label class="veld">Agenda
+          <select id="f-agenda"></select>
+        </label>
+        <label class="veld">Weergeven als
+          <select id="f-status">
+            <option value="bezet">Bezet</option>
+            <option value="vrij">Vrij</option>
+          </select>
+        </label>
+      </div>
+
+      <div class="rij">
+        <label class="veld">Herhalen
+          <select id="f-herhaling">
+            <option value="geen">Niet</option>
+            <option value="dagelijks">Elke dag</option>
+            <option value="werkdagen">Elke werkdag (ma–vr)</option>
+            <option value="wekelijks">Elke week</option>
+            <option value="maandelijks">Elke maand</option>
+            <option value="jaarlijks">Elk jaar</option>
+            <option value="anders" hidden>Zoals ingesteld in Google</option>
+          </select>
+        </label>
+        <label class="veld" id="f-tot-veld">Tot en met (optioneel)
+          <input id="f-tot" type="date">
+        </label>
+      </div>
+
+      <label class="veld">Locatie
+        <input id="f-locatie" type="text" autocomplete="off">
+      </label>
+
+      <label class="veld">Notitie
+        <textarea id="f-notitie" rows="3"></textarea>
+      </label>
+
+      <p id="f-melding" class="melding"></p>
+
+      <div class="knoppen">
+        <button type="button" id="f-annuleren" class="knop">Annuleren</button>
+        <button type="submit" id="f-opslaan" class="knop actief">Opslaan</button>
+      </div>
     </form>
+  </dialog>
+
+  <!-- Vraagvenster, bijv. "Weet je het zeker?" of "Alleen deze keer of alle keren?" -->
+  <dialog id="vraag">
+    <h2 id="vraag-titel"></h2>
+    <p id="vraag-tekst"></p>
+    <div id="vraag-knoppen" class="knoppen"></div>
   </dialog>
 
   <script src="https://accounts.google.com/gsi/client" async></script>
   <script src="google.js"></script>
   <script src="app.js"></script>
+  <script src="bewerken.js"></script>
 </body>
 </html>

@@ -8,13 +8,13 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 3. [x] Eerste versie: weekweergave met voorbeeldafspraken
 4. [x] Online zetten via GitHub Pages en testen op telefoon
 5. [x] Installeerbaar maken als app met icoon (PWA)
-6. [ ] Koppeling met Google Calendar (bezig)
+6. [x] Koppeling met Google Calendar
    - [x] 6a. Google Cloud-project aanmaken (naam "Mijn agenda", project-ID `mijn-agenda-512509`, geen organisatie, GEEN betaalgegevens/free trial)
    - [x] 6b. Google Calendar API aanzetten
    - [x] 6c. Toestemmingsscherm instellen + jezelf als testgebruiker (External, status Testing laten staan)
    - [x] 6d. Client-ID (inlogsleutel voor de app) maken (type Web application, origin `https://sirloeki.github.io`)
    - [x] 6e. Inloggen en afspraken lezen in de app bouwen (inloggen op de telefoon werkt)
-   - [ ] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
+   - [x] 6f. Outlook-afspraken (.ics) importeren en categorieën regelen
      - [x] Ronde 1: overzichtspagina gebouwd (`importeren.html`), nog uitvoeren met het echte bestand
      - [x] Ronde 1 uitgevoerd: 8.747 afspraken (2014–2028), 135 nog actueel, 182 herhalend, 0 bijlagen.
            Bijna alles zonder categorie; alleen "Travelling" (166) komt echt voor.
@@ -23,7 +23,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
      - [x] Ronde 2 uitgevoerd: 1.000 naar "Werk (Outlook)", 19 naar "Reizen", 108 aangepaste keren; 0 mislukt.
            Let op: tijdzones "Unnamed Time Zone 1" en "Unnamed Time Zone 3" uit Outlook zijn als Amsterdam-tijd
            overgenomen; afspraken daarmee kunnen een paar uur verschoven zijn (nog controleren).
-7. [ ] Afspraken toevoegen, aanpassen en verwijderen
+7. [~] Afspraken toevoegen, aanpassen en verwijderen (gebouwd en getest met nagebootste Google; nog testen op de telefoon)
 8. [ ] Verfijnen met extra wensen
 
 ## Gedaan
@@ -77,11 +77,23 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - In het detailvenster staat "Bezet" of "Vrij".
   - Aanpassen per afspraak: nu via de Google Agenda-app (potloodje → Bezet/Beschikbaar), straks ook in onze app (stap 7).
 
+- Afspraken toevoegen, aanpassen en verwijderen (stap 7):
+  - `bewerken.js`: formulier, opslaan naar Google, verwijderen, vraagvensters.
+  - Nieuwe afspraak: ronde +knop rechtsonder, of tik op een leeg tijdvak (dag en half uur staan dan al ingevuld),
+    of tik op een lege plek in de hele-dag-strook.
+  - Velden: titel, hele dag, begin/eind, agenda, bezet/vrij, herhalen (+ tot en met), locatie, notitie.
+  - Standaard in de hoofdagenda. Nieuwe hele-dag-afspraak staat standaard op "vrij", met tijd op "bezet".
+  - Herhalende afspraak aanpassen/verwijderen: de app vraagt "Alleen deze keer" of "Alle keren".
+  - Agenda's die niet van jou zijn (Feestdagen) kun je niet aanpassen; de knoppen verschijnen daar niet.
+  - Nooit e-mails of uitnodigingen naar anderen (sendUpdates=none).
+
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
 - **Uren:** 07:00–22:00 in beeld; vroeger en later bereikbaar door te scrollen.
 - **Kleurstand:** automatisch licht/donker, zoals de telefoon is ingesteld.
 - **Hele-dag-afspraken:** in een aparte strook bovenaan, zoals in Outlook.
+- **Stap 7:** + knop én tikken op leeg vak; extra velden locatie, notitie en herhaling (geen herinneringen);
+  standaard-agenda = hoofdagenda; bij herhalingen vragen "deze keer of alle keren".
 - **Bezet/vrij:** bezet = vol blok (hele dag: plus volledig ingekleurde dagkolom); vrij = licht blok met gekleurde rand.
 - **Opslag:** afspraken staan in Google Calendar; de app leest en schrijft via de Google Calendar API.
 - **Hosting:** gratis via GitHub Pages.
@@ -93,4 +105,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Resultaat van de import controleren in de app op de telefoon; daarna stap 7 (afspraken toevoegen/aanpassen/verwijderen).
+Stap 7 testen op de telefoon (toevoegen, aanpassen, verwijderen). Daarna stap 8: verfijnen met extra wensen.

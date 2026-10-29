@@ -114,6 +114,10 @@ function teken() {
   kop.append(heleDagLabel);
   for (const dag of dagen) {
     const cel = maak('div', 'heledag');
+    // tik op een lege plek in de strook: nieuwe hele-dag-afspraak op die dag
+    cel.addEventListener('click', e => {
+      if (e.target === cel && isIngelogd()) nieuweAfspraak(dag, true);
+    });
     const morgen = plusDagen(dag, 1);
     afspraken
       .filter(a => a.heleDag && a.start < morgen && a.eind > dag)
@@ -134,6 +138,15 @@ function teken() {
 
   for (const dag of dagen) {
     const kolom = maak('div', 'dag');
+    // tik op een leeg tijdvak: nieuwe afspraak op die dag en dat (halve) uur
+    kolom.addEventListener('click', e => {
+      if (e.target !== kolom || !isIngelogd()) return;
+      const uurHoogte = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--uur'));
+      const minuten = Math.floor((e.offsetY / uurHoogte) * 2) * 30;
+      const start = new Date(dag);
+      start.setMinutes(Math.min(minuten, 23 * 60));
+      nieuweAfspraak(start, false);
+    });
     // Een hele-dag-afspraak op "bezet" blokt de hele dag: die dag krijgt schuine strepen
     const morgen = plusDagen(dag, 1);
     const blokker = afspraken.find(a => a.heleDag && a.bezet && a.start < morgen && a.eind > dag);
@@ -231,7 +244,10 @@ function maak(tag, klasse) {
 }
 
 // ----- Details van een afspraak -----
+let getoondeAfspraak = null;
+
 function toonDetails(afspraak) {
+  getoondeAfspraak = afspraak;
   document.getElementById('details-kleur').style.setProperty('--kleur', afspraak.agenda.kleur);
   document.getElementById('details-titel').textContent = afspraak.titel;
 
@@ -250,13 +266,38 @@ function toonDetails(afspraak) {
   document.getElementById('details-status').textContent = afspraak.bezet
     ? '⛔ Bezet (je bent niet beschikbaar)'
     : '✅ Vrij (alleen ter herinnering)';
+  document.getElementById('details-herhaling').textContent = afspraak.reeksId ? '🔁 Herhalende afspraak' : '';
+  document.getElementById('details-notitie').textContent = notitieAlsTekst(afspraak.notitie);
+  // In agenda's die niet van jou zijn (zoals Feestdagen) kun je niets aanpassen
+  document.getElementById('details-bewerken').hidden = !afspraak.agenda.schrijfbaar;
+  document.getElementById('details-verwijderen').hidden = !afspraak.agenda.schrijfbaar;
   document.getElementById('details').showModal();
 }
 
-// Tik naast het venster om het te sluiten
-document.getElementById('details').addEventListener('click', e => {
-  if (e.target.id === 'details') e.target.close();
+// Google bewaart notities soms als opgemaakte tekst (HTML); wij tonen gewone tekst
+function notitieAlsTekst(notitie) {
+  return notitie
+    .replace(/<br\s*\/?>/gi, '\n')
+    .replace(/<\/(p|div|li)>/gi, '\n')
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim();
+}
+
+document.getElementById('details-sluiten').addEventListener('click', () => {
+  document.getElementById('details').close();
 });
+
+// Tik naast een venster om het te sluiten
+for (const id of ['details', 'vraag']) {
+  document.getElementById(id).addEventListener('click', e => {
+    if (e.target.id === id) e.target.close();
+  });
+}
 
 // ----- Legenda met de agenda's en hun kleur -----
 function tekenLegenda() {
@@ -281,6 +322,7 @@ function zetStatus(tekst, isFout = false) {
 // ----- Afspraken van de week in beeld ophalen -----
 async function laadWeek({ opnieuw = false } = {}) {
   const inlogbalk = document.getElementById('inlogbalk');
+  document.getElementById('nieuw').hidden = !isIngelogd();
   if (!isIngelogd()) {
     inlogbalk.hidden = false;
     agendas = [];
