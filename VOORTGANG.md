@@ -23,7 +23,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
      - [x] Ronde 2 uitgevoerd: 1.000 naar "Werk (Outlook)", 19 naar "Reizen", 108 aangepaste keren; 0 mislukt.
            Let op: tijdzones "Unnamed Time Zone 1" en "Unnamed Time Zone 3" uit Outlook zijn als Amsterdam-tijd
            overgenomen; afspraken daarmee kunnen een paar uur verschoven zijn (nog controleren).
-7. [~] Afspraken toevoegen, aanpassen en verwijderen (gebouwd en getest met nagebootste Google; nog testen op de telefoon)
+7. [x] Afspraken toevoegen, aanpassen en verwijderen (werkt op de telefoon, synchroon met Google)
 8. [ ] Verfijnen met extra wensen
 
 ## Gedaan
@@ -105,4 +105,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 7 testen op de telefoon (toevoegen, aanpassen, verwijderen). Daarna stap 8: verfijnen met extra wensen.
+Stap 8: verfijnen met extra wensen.
