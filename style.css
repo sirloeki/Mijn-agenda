@@ -13,6 +13,7 @@
   --nu: #d32f2f;
   --tijdbreedte: 2.75rem;
   --uur: 48px; /* hoogte van één uur, app.js past dit aan het scherm aan */
+  --band: 1.4rem; /* hoogte van een afspraak-band in de hele-dag-strook */
 }
 
 /* ===== Kleuren (donker), volgt de instelling van de telefoon ===== */
@@ -161,14 +162,18 @@ body {
 
 .hoek { font-size: .65rem; color: var(--zacht); text-align: right; padding: .3rem .3rem 0 0; }
 
-.heledag {
+.strook {
+  grid-column: 2 / -1;
+  display: grid;
+  grid-template-columns: repeat(var(--dagen), minmax(0, 1fr));
+  row-gap: 2px;
+  padding: 2px 0;
   min-height: 1.6rem;
-  padding: 2px 1px;
+}
+.heledag {
+  grid-row: 1 / -1;
   border-left: 1px solid var(--lijn);
-  display: flex;
-  flex-direction: column;
-  gap: 2px;
-  min-width: 0;
+  cursor: pointer;
 }
 
 /* ===== Het raster met de uren ===== */
@@ -242,19 +247,33 @@ body {
   box-shadow: 0 0 0 1px var(--achtergrond); /* dun randje tussen afspraken naast elkaar */
 }
 
-.heledag .afspraak {
+/* Band: hele-dag- of meerdaagse afspraak, loopt door over de dagen */
+.band {
+  display: block;
+  position: relative;
+  z-index: 1;
+  margin: 0 2px;
+  min-width: 0;
   white-space: nowrap;
+  overflow: hidden;
   text-overflow: ellipsis;
   font-weight: 600;
-  display: block;
+  line-height: calc(var(--band) - 4px);
+  padding-top: 0;
+  padding-bottom: 0;
 }
+.band strong { display: inline; }
+/* begon vóór de getoonde periode / loopt erna nog door: rechte kant + pijltje */
+.band.eerder-begonnen { margin-left: 0; border-top-left-radius: 0; border-bottom-left-radius: 0; }
+.band.eerder-begonnen strong::before { content: "‹ "; }
+.band.later-klaar { margin-right: 0; border-top-right-radius: 0; border-bottom-right-radius: 0; }
 
-/* Bezet, hele dag: vol gekleurd blok */
-.heledag .afspraak:not(.vrij) {
+/* Bezet: vol gekleurd blok */
+.band:not(.vrij):not(.kort) {
   background: var(--kleur);
   color: var(--tekstkleur, #fff);
 }
-.heledag .afspraak:not(.vrij):hover { filter: brightness(1.08); }
+.band:not(.vrij):not(.kort):hover { filter: brightness(1.08); }
 
 /* Vrij (alleen ter herinnering): lichte achtergrond met gekleurd randje */
 .afspraak.vrij,
@@ -375,3 +394,79 @@ a.knop { text-decoration: none; }
 .inhoud th, .inhoud td { padding: .35rem .6rem; border-bottom: 1px solid var(--lijn); text-align: right; white-space: nowrap; }
 .inhoud th:first-child, .inhoud td:first-child { text-align: left; }
 .inhoud th { color: var(--zacht); font-weight: 600; }
+
+/* ===== Maandweergave ===== */
+#agenda.maandweergave { overflow: hidden; }
+.maand { display: flex; flex-direction: column; height: 100%; }
+.maand-kop {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: 1px solid var(--lijn);
+}
+.maand-kop div { text-align: center; font-size: .75rem; color: var(--zacht); padding: .3rem 0; }
+.maand-weken { flex: 1; display: grid; min-height: 0; }
+.maand-week {
+  display: grid;
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  border-bottom: 1px solid var(--lijn);
+  overflow: hidden;
+  min-height: 0;
+}
+.maand-dag {
+  grid-row: 1 / -1;
+  border-left: 1px solid var(--lijn);
+  cursor: pointer;
+  min-width: 0;
+}
+.maand-dag:first-child { border-left: 0; }
+.maand-dag.andere-maand { background: var(--vlak); }
+.maand-dag.andere-maand .dagnummer { color: var(--zacht); }
+.maand-dag.vandaag { background: var(--vandaag); }
+.dagnummer {
+  display: block;
+  width: 1.4rem;
+  height: 1.4rem;
+  line-height: 1.4rem;
+  margin: 1px auto 0;
+  text-align: center;
+  border-radius: 50%;
+  font-size: .78rem;
+  font-weight: 600;
+}
+.maand-dag.vandaag .dagnummer { background: var(--groen); color: var(--groen-tekst); }
+.maand-week .band { --band: 18px; font-size: .68rem; margin-top: 1px; margin-bottom: 1px; line-height: 14px; padding: 0 3px; }
+/* korte afspraak (met tijd) in de maand: alleen tekst met een gekleurd bolletje */
+.maand-week .band.kort {
+  background: none;
+  box-shadow: none;
+  border-left: 0;
+  font-weight: 500;
+  padding-left: 2px;
+}
+.maand-week .band.kort strong::before {
+  content: "";
+  display: inline-block;
+  width: .45rem;
+  height: .45rem;
+  border-radius: 50%;
+  background: var(--kleur);
+  margin-right: .2rem;
+  vertical-align: middle;
+}
+.maand-week .band.kort.vrij strong { font-style: italic; font-weight: 400; }
+.maand-week .band.kort:hover { background: var(--vlak); }
+.tijdje { color: var(--zacht); font-weight: 400; }
+.meer {
+  font: inherit;
+  font-size: .68rem;
+  border: 0;
+  background: none;
+  color: var(--zacht);
+  text-align: left;
+  padding: 0 4px;
+  cursor: pointer;
+  z-index: 1;
+}
+@media (max-width: 600px) {
+  .tijdje { display: none; } /* op de telefoon is er geen ruimte voor de tijd */
+}

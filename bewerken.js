@@ -29,10 +29,6 @@ function uitInvoer(datum, tijd = '00:00') {
   return new Date(jaar, maand - 1, dag, uur, minuut);
 }
 
-function dagenTussen(a, b) {
-  return Math.round((beginVanDag(b) - beginVanDag(a)) / 86400000);
-}
-
 // ----- Herhalingen: van keuzelijst naar Google-regel en terug -----
 const HERHAAL_REGELS = {
   dagelijks: 'FREQ=DAILY',
@@ -316,7 +312,7 @@ async function slaOp() {
     formulierEl.close();
     // laat de week zien waarin de afspraak nu staat
     if (!zichtbareDagen().some(d => zelfdeDag(d, start))) staat.anker = beginVanDag(start);
-    await laadWeek({ opnieuw: true });
+    await laadPeriode({ opnieuw: true });
   } catch (fout) {
     if (fout instanceof NietIngelogdFout) {
       toonMelding('Je inlog is verlopen. ', 'Opnieuw inloggen', async () => {
@@ -365,7 +361,7 @@ async function verwijder(afspraak) {
   if (!keuze) return;
   try {
     await verwijderAfspraak(afspraak.agenda.id, keuze === 'reeks' ? afspraak.reeksId : afspraak.id);
-    await laadWeek({ opnieuw: true });
+    await laadPeriode({ opnieuw: true });
   } catch (fout) {
     meldFout(fout);
   }
@@ -373,7 +369,7 @@ async function verwijder(afspraak) {
 
 function meldFout(fout) {
   if (fout instanceof NietIngelogdFout) {
-    laadWeek(); // toont de inlogknop
+    laadPeriode(); // toont de inlogknop
     zetStatus('Je inlog was verlopen. Log in en probeer het nog eens.', true);
   } else {
     zetStatus('Niet gelukt: ' + fout.message, true);

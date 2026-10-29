@@ -43,6 +43,20 @@ function weeknummer(datum) {
   return 1 + Math.round((donderdag - eersteDonderdag) / (7 * 24 * 60 * 60 * 1000));
 }
 
+// Aantal dagen van a naar b (alleen de datum telt, niet de tijd)
+function dagenTussen(a, b) {
+  return Math.round((beginVanDag(b) - beginVanDag(a)) / 86400000);
+}
+
+function eersteVanMaand(datum) {
+  return new Date(datum.getFullYear(), datum.getMonth(), 1);
+}
+
+// Duurt een afspraak een hele dag of langer? Dan tonen we hem als balk bovenaan
+function isMeerdaags(afspraak) {
+  return afspraak.heleDag || afspraak.eind - afspraak.start >= 24 * 60 * 60 * 1000;
+}
+
 function minutenInDag(datum) {
   return datum.getHours() * 60 + datum.getMinutes();
 }
@@ -51,34 +65,44 @@ const tijdNotatie = new Intl.DateTimeFormat('nl-NL', { hour: '2-digit', minute: 
 const dagNotatie = new Intl.DateTimeFormat('nl-NL', { weekday: 'short' });
 const langeDatum = new Intl.DateTimeFormat('nl-NL', { weekday: 'long', day: 'numeric', month: 'long', year: 'numeric' });
 const periodeNotatie = new Intl.DateTimeFormat('nl-NL', { day: 'numeric', month: 'long', year: 'numeric' });
+const maandNotatie = new Intl.DateTimeFormat('nl-NL', { month: 'long', year: 'numeric' });
 
 // ----- Afspraken uit Google -----
 let agendas = [];            // de agenda's uit Google, met naam en kleur
-let afspraken = [];          // de afspraken van de week die in beeld is
+let afspraken = [];          // de afspraken van de week of maand die in beeld is
 const weekCache = new Map(); // al opgehaalde weken, zodat terugbladeren snel gaat
 let laadNummer = 0;          // om oude antwoorden te negeren als je snel doorklikt
 
 // ----- Wat er nu op het scherm staat -----
+const WEERGAVEN = ['1', '5', '7', 'maand'];
 const staat = {
   anker: beginVanDag(new Date()), // de dag waar we omheen kijken
-  aantalDagen: leesBewaardAantalDagen(),
+  weergave: leesBewaardeWeergave(), // '1', '5' of '7' dagen, of 'maand'
 };
 
-function leesBewaardAantalDagen() {
+function leesBewaardeWeergave() {
   try {
-    const waarde = Number(localStorage.getItem('aantalDagen'));
-    if ([1, 5, 7].includes(waarde)) return waarde;
+    const waarde = localStorage.getItem('weergave') || localStorage.getItem('aantalDagen');
+    if (WEERGAVEN.includes(waarde)) return waarde;
   } catch (e) { /* niet erg, dan de standaard */ }
-  return 7;
+  return '7';
 }
 
-function bewaarAantalDagen() {
-  try { localStorage.setItem('aantalDagen', String(staat.aantalDagen)); } catch (e) { /* niet erg */ }
+function bewaarWeergave() {
+  try { localStorage.setItem('weergave', staat.weergave); } catch (e) { /* niet erg */ }
 }
 
 function zichtbareDagen() {
-  const eerste = staat.aantalDagen === 1 ? staat.anker : maandagVan(staat.anker);
-  return Array.from({ length: staat.aantalDagen }, (_, i) => plusDagen(eerste, i));
+  if (staat.weergave === 'maand') {
+    // hele weken (ma–zo) van de week met de 1e tot en met de week met de laatste dag
+    const eerste = maandagVan(eersteVanMaand(staat.anker));
+    const laatste = new Date(staat.anker.getFullYear(), staat.anker.getMonth() + 1, 0);
+    return Array.from({ length: dagenTussen(eerste, laatste) + 1 + (6 - (laatste.getDay() + 6) % 7) },
+      (_, i) => plusDagen(eerste, i));
+  }
+  const aantal = Number(staat.weergave);
+  const eerste = aantal === 1 ? staat.anker : maandagVan(staat.anker);
+  return Array.from({ length: aantal }, (_, i) => plusDagen(eerste, i));
 }
 
 // ----- Onderdelen van de pagina -----
@@ -89,13 +113,59 @@ const weeknummerEl = document.getElementById('weeknummer');
 // ----- Tekenen -----
 function teken() {
   const dagen = zichtbareDagen();
-  const vandaag = new Date();
-  agendaEl.style.setProperty('--dagen', dagen.length);
-
   tekenPeriode(dagen);
   document.querySelectorAll('.weergave .knop').forEach(knop => {
-    knop.classList.toggle('actief', Number(knop.dataset.dagen) === staat.aantalDagen);
+    knop.classList.toggle('actief', knop.dataset.weergave === staat.weergave);
   });
+  agendaEl.classList.toggle('maandweergave', staat.weergave === 'maand');
+  if (staat.weergave === 'maand') tekenMaand(dagen);
+  else tekenWeek(dagen);
+}
+
+// Meerdaagse afspraken als balken over de dagen 'dagen' verdelen.
+// Balken die elkaar overlappen komen op een eigen regel, onder elkaar.
+function verdeelBalken(dagen, lijst) {
+  const eerste = dagen[0];
+  const na = plusDagen(dagen[dagen.length - 1], 1);
+  const balken = lijst
+    .filter(a => a.start < na && a.eind > eerste)
+    .map(a => {
+      const laatsteDag = beginVanDag(new Date(Math.max(a.start.getTime(), a.eind.getTime() - 1)));
+      return {
+        afspraak: a,
+        van: Math.max(0, dagenTussen(eerste, a.start)),
+        tot: Math.min(dagen.length, dagenTussen(eerste, laatsteDag) + 1), // tot en met, als 'na'
+        eerderBegonnen: a.start < eerste,
+        laterKlaar: laatsteDag >= na,
+      };
+    })
+    .sort((x, y) => x.van - y.van || (y.tot - y.van) - (x.tot - x.van)
+      || y.afspraak.heleDag - x.afspraak.heleDag || x.afspraak.start - y.afspraak.start);
+
+  const regels = []; // per regel: de eerste dag die weer vrij is
+  for (const balk of balken) {
+    let regel = regels.findIndex(vrijVanaf => vrijVanaf <= balk.van);
+    if (regel === -1) regel = regels.length;
+    regels[regel] = balk.tot;
+    balk.regel = regel;
+  }
+  return { balken, aantalRegels: regels.length };
+}
+
+function maakBalk(balk, metTijd = false) {
+  const knop = maakAfspraakKnop(balk.afspraak, { alsBalk: true, metTijd });
+  knop.classList.add('band');
+  knop.classList.toggle('eerder-begonnen', balk.eerderBegonnen);
+  knop.classList.toggle('later-klaar', balk.laterKlaar);
+  knop.style.gridRow = String(balk.regel + 1);
+  knop.style.gridColumn = `${balk.van + 1} / ${balk.tot + 1}`;
+  return knop;
+}
+
+// ----- Weekweergave (1, 5 of 7 dagen) -----
+function tekenWeek(dagen) {
+  const vandaag = new Date();
+  agendaEl.style.setProperty('--dagen', dagen.length);
 
   // Kop: dagnamen en hele-dag-strook
   const kop = maak('div', 'kop');
@@ -112,18 +182,22 @@ function teken() {
   const heleDagLabel = maak('div', 'hoek');
   heleDagLabel.textContent = 'hele dag';
   kop.append(heleDagLabel);
-  for (const dag of dagen) {
+
+  // Strook met hele-dag- en meerdaagse afspraken, als doorlopende balken
+  const strook = maak('div', 'strook');
+  const { balken, aantalRegels } = verdeelBalken(dagen, afspraken.filter(isMeerdaags));
+  strook.style.gridTemplateRows = `repeat(${Math.max(1, aantalRegels)}, var(--band))`;
+  dagen.forEach((dag, i) => {
     const cel = maak('div', 'heledag');
+    cel.style.gridColumn = String(i + 1);
     // tik op een lege plek in de strook: nieuwe hele-dag-afspraak op die dag
-    cel.addEventListener('click', e => {
-      if (e.target === cel && isIngelogd()) nieuweAfspraak(dag, true);
+    cel.addEventListener('click', () => {
+      if (isIngelogd()) nieuweAfspraak(dag, true);
     });
-    const morgen = plusDagen(dag, 1);
-    afspraken
-      .filter(a => a.heleDag && a.start < morgen && a.eind > dag)
-      .forEach(a => cel.append(maakAfspraakKnop(a)));
-    kop.append(cel);
-  }
+    strook.append(cel);
+  });
+  for (const balk of balken) strook.append(maakBalk(balk));
+  kop.append(strook);
 
   // Raster: tijden links, daarna een kolom per dag
   const raster = maak('div', 'raster');
@@ -149,7 +223,7 @@ function teken() {
     });
     // Een hele-dag-afspraak op "bezet" blokt de hele dag: die dag krijgt schuine strepen
     const morgen = plusDagen(dag, 1);
-    const blokker = afspraken.find(a => a.heleDag && a.bezet && a.start < morgen && a.eind > dag);
+    const blokker = afspraken.find(a => isMeerdaags(a) && a.bezet && a.start < morgen && a.eind > dag);
     if (blokker) {
       kolom.classList.add('geblokt');
       kolom.style.setProperty('--kleur', blokker.agenda.kleur);
@@ -174,9 +248,94 @@ function teken() {
   agendaEl.replaceChildren(kop, raster);
 }
 
+// ----- Maandweergave -----
+const MAAND_DAGNUMMER = 22; // pixels voor de regel met het dagnummer
+const MAAND_REGEL = 18;     // pixels per afspraak
+
+function tekenMaand(dagen) {
+  const vandaag = new Date();
+  const maand = staat.anker.getMonth();
+  const aantalWeken = dagen.length / 7;
+
+  const maandEl = maak('div', 'maand');
+  const kop = maak('div', 'maand-kop');
+  for (const dag of dagen.slice(0, 7)) {
+    const naam = maak('div');
+    naam.textContent = dagNotatie.format(dag).replace('.', '');
+    kop.append(naam);
+  }
+  const weken = maak('div', 'maand-weken');
+  weken.style.gridTemplateRows = `repeat(${aantalWeken}, minmax(0, 1fr))`;
+  maandEl.append(kop, weken);
+  agendaEl.replaceChildren(maandEl); // eerst plaatsen, dan kunnen we meten hoeveel ruimte er is
+
+  // Hoeveel afspraken passen er onder elkaar in één dag?
+  const rijHoogte = weken.clientHeight / aantalWeken;
+  const plekken = Math.max(1, Math.floor((rijHoogte - MAAND_DAGNUMMER - 2) / MAAND_REGEL));
+
+  for (let w = 0; w < aantalWeken; w++) {
+    const week = dagen.slice(w * 7, w * 7 + 7);
+    const rij = maak('div', 'maand-week');
+    rij.style.gridTemplateRows = `${MAAND_DAGNUMMER}px repeat(${plekken}, ${MAAND_REGEL}px)`;
+    const { balken } = verdeelBalken(week, afspraken);
+    const opDag = (balk, i) => balk.van <= i && i < balk.tot;
+    // dagen waar niet alles past: daar komt op de laatste plek "+3"
+    const teVol = week.map((_, i) => balken.some(b => opDag(b, i) && b.regel >= plekken));
+
+    week.forEach((dag, i) => {
+      const cel = maak('div', 'maand-dag');
+      cel.style.gridColumn = String(i + 1);
+      cel.classList.toggle('andere-maand', dag.getMonth() !== maand);
+      cel.classList.toggle('vandaag', zelfdeDag(dag, vandaag));
+      const nummer = maak('span', 'dagnummer');
+      nummer.textContent = dag.getDate();
+      cel.append(nummer);
+      cel.addEventListener('click', () => openDag(dag));
+      rij.append(cel);
+
+      if (teVol[i]) {
+        const meer = maak('button', 'meer');
+        meer.textContent = `+${balken.filter(b => opDag(b, i) && b.regel >= plekken - 1).length}`;
+        meer.style.gridRow = String(plekken + 1);
+        meer.style.gridColumn = String(i + 1);
+        meer.addEventListener('click', () => openDag(dag));
+        rij.append(meer);
+      }
+    });
+
+    for (const balk of balken) {
+      const dagenVanBalk = Array.from({ length: balk.tot - balk.van }, (_, k) => balk.van + k);
+      const past = balk.regel < plekken - 1
+        || (balk.regel === plekken - 1 && dagenVanBalk.every(i => !teVol[i]));
+      if (!past) continue;
+      const kort = !isMeerdaags(balk.afspraak);
+      const el = maakBalk(balk, kort);
+      el.classList.toggle('kort', kort);
+      el.style.gridRow = String(balk.regel + 2);
+      rij.append(el);
+    }
+    weken.append(rij);
+  }
+}
+
+// Tik op een dag in de maand: ga naar die dag
+function openDag(dag) {
+  staat.weergave = '1';
+  staat.anker = beginVanDag(dag);
+  bewaarWeergave();
+  teken();
+  scrollNaarBegin();
+  laadPeriode();
+}
+
 function tekenPeriode(dagen) {
   const eerste = dagen[0];
   const laatste = dagen[dagen.length - 1];
+  if (staat.weergave === 'maand') {
+    periodeEl.textContent = maandNotatie.format(staat.anker);
+    weeknummerEl.textContent = `week ${weeknummer(eerste)}–${weeknummer(laatste)}`;
+    return;
+  }
   periodeEl.textContent = dagen.length === 1
     ? langeDatum.format(eerste)
     : periodeNotatie.formatRange(eerste, laatste);
@@ -187,7 +346,7 @@ function tekenPeriode(dagen) {
 function afsprakenOpDag(dag) {
   const morgen = plusDagen(dag, 1);
   const stukken = afspraken
-    .filter(a => !a.heleDag && a.start < morgen && a.eind > dag)
+    .filter(a => !isMeerdaags(a) && a.start < morgen && a.eind > dag)
     .map(a => {
       const van = a.start < dag ? 0 : minutenInDag(a.start);
       const tot = a.eind >= morgen ? 24 * 60 : minutenInDag(a.eind);
@@ -221,14 +380,20 @@ function afsprakenOpDag(dag) {
   return stukken;
 }
 
-function maakAfspraakKnop(afspraak) {
+function maakAfspraakKnop(afspraak, { alsBalk = false, metTijd = false } = {}) {
   const knop = maak('button', afspraak.bezet ? 'afspraak' : 'afspraak vrij');
   knop.style.setProperty('--kleur', afspraak.agenda.kleur);
   knop.style.setProperty('--tekstkleur', afspraak.agenda.tekstkleur);
   const titel = maak('strong');
   titel.textContent = afspraak.titel;
+  if (metTijd) {
+    // in de maandweergave: "09:00 Titel" op één regel
+    const tijd = maak('span', 'tijdje');
+    tijd.textContent = tijdNotatie.format(afspraak.start) + ' ';
+    titel.prepend(tijd);
+  }
   knop.append(titel);
-  if (!afspraak.heleDag) {
+  if (!afspraak.heleDag && !alsBalk) {
     const tijd = maak('small');
     tijd.textContent = `${tijdNotatie.format(afspraak.start)} – ${tijdNotatie.format(afspraak.eind)}`;
     knop.append(tijd);
@@ -319,8 +484,9 @@ function zetStatus(tekst, isFout = false) {
   status.classList.toggle('fout', isFout);
 }
 
-// ----- Afspraken van de week in beeld ophalen -----
-async function laadWeek({ opnieuw = false } = {}) {
+// ----- Afspraken van de week of maand in beeld ophalen -----
+// We halen per week op en bewaren elke week, zodat terugbladeren snel gaat.
+async function laadPeriode({ opnieuw = false } = {}) {
   const inlogbalk = document.getElementById('inlogbalk');
   document.getElementById('nieuw').hidden = !isIngelogd();
   if (!isIngelogd()) {
@@ -335,10 +501,11 @@ async function laadWeek({ opnieuw = false } = {}) {
   inlogbalk.hidden = true;
   if (opnieuw) weekCache.clear();
 
-  const maandag = maandagVan(staat.anker);
-  const sleutel = maandag.toDateString();
-  if (weekCache.has(sleutel)) {
-    afspraken = weekCache.get(sleutel);
+  const dagen = zichtbareDagen();
+  const maandagen = [...new Set(dagen.map(d => maandagVan(d).getTime()))].map(t => new Date(t));
+  const ontbrekend = maandagen.filter(m => !weekCache.has(m.toDateString()));
+  if (ontbrekend.length === 0) {
+    afspraken = afsprakenUitCache(maandagen);
     teken();
     return;
   }
@@ -350,18 +517,28 @@ async function laadWeek({ opnieuw = false } = {}) {
       agendas = await haalAgendas();
       tekenLegenda();
     }
-    const lijst = await haalAfspraken(agendas, maandag, plusDagen(maandag, 7));
-    weekCache.set(sleutel, lijst);
+    await Promise.all(ontbrekend.map(async maandag => {
+      weekCache.set(maandag.toDateString(), await haalAfspraken(agendas, maandag, plusDagen(maandag, 7)));
+    }));
     if (nummer !== laadNummer) return; // intussen naar een andere week gegaan
-    afspraken = lijst;
+    afspraken = afsprakenUitCache(maandagen);
     zetStatus('');
     teken();
   } catch (fout) {
     if (nummer !== laadNummer) return;
     zetStatus('');
-    if (fout instanceof NietIngelogdFout) laadWeek(); // toont de inlogknop
+    if (fout instanceof NietIngelogdFout) laadPeriode(); // toont de inlogknop
     else zetStatus(fout.message, true);
   }
+}
+
+// Alle afspraken van de gegeven weken; een afspraak over twee weken heen maar één keer
+function afsprakenUitCache(maandagen) {
+  const gezien = new Map();
+  for (const maandag of maandagen) {
+    for (const a of weekCache.get(maandag.toDateString()) || []) gezien.set(`${a.agenda.id}|${a.id}`, a);
+  }
+  return [...gezien.values()];
 }
 
 // ----- Hoogte van een uur aanpassen aan het scherm -----
@@ -381,10 +558,13 @@ function scrollNaarBegin() {
 
 // ----- Knoppen -----
 function verschuif(richting) {
-  const stap = staat.aantalDagen === 1 ? 1 : 7;
-  staat.anker = plusDagen(staat.anker, richting * stap);
+  if (staat.weergave === 'maand') {
+    staat.anker = new Date(staat.anker.getFullYear(), staat.anker.getMonth() + richting, 1);
+  } else {
+    staat.anker = plusDagen(staat.anker, richting * (staat.weergave === '1' ? 1 : 7));
+  }
   teken();
-  laadWeek();
+  laadPeriode();
 }
 
 document.getElementById('vorige').addEventListener('click', () => verschuif(-1));
@@ -393,22 +573,25 @@ document.getElementById('vandaag').addEventListener('click', () => {
   staat.anker = beginVanDag(new Date());
   teken();
   scrollNaarBegin();
-  laadWeek();
+  laadPeriode();
 });
 
 document.querySelectorAll('.weergave .knop').forEach(knop => {
   knop.addEventListener('click', () => {
-    const nieuw = Number(knop.dataset.dagen);
-    // Van week naar 1 dag: toon vandaag als die in deze week valt, anders de maandag
-    if (nieuw === 1 && staat.aantalDagen !== 1) {
+    const nieuw = knop.dataset.weergave;
+    // Naar een kleinere weergave: toon vandaag als die nu in beeld is, anders het begin
+    if (nieuw !== staat.weergave && nieuw !== 'maand') {
       const vandaag = beginVanDag(new Date());
       const zichtbaar = zichtbareDagen().some(d => zelfdeDag(d, vandaag));
-      staat.anker = zichtbaar ? vandaag : maandagVan(staat.anker);
+      if (zichtbaar) staat.anker = vandaag;
+      else if (staat.weergave === 'maand') staat.anker = eersteVanMaand(staat.anker);
+      else if (nieuw === '1') staat.anker = maandagVan(staat.anker);
     }
-    staat.aantalDagen = nieuw;
-    bewaarAantalDagen();
+    staat.weergave = nieuw;
+    bewaarWeergave();
     teken();
-    laadWeek();
+    if (nieuw !== 'maand') scrollNaarBegin();
+    laadPeriode();
   });
 });
 
@@ -418,7 +601,7 @@ document.getElementById('inloggen').addEventListener('click', async () => {
   melding.textContent = '';
   try {
     await logIn();
-    await laadWeek({ opnieuw: true });
+    await laadPeriode({ opnieuw: true });
   } catch (fout) {
     melding.textContent = fout.message;
   }
@@ -426,17 +609,21 @@ document.getElementById('inloggen').addEventListener('click', async () => {
 
 document.getElementById('uitloggen').addEventListener('click', () => {
   logUit();
-  laadWeek();
+  laadPeriode();
 });
 
 // Als je terugkomt in de app: afspraken verversen (bijv. na een wijziging op je telefoon)
 document.addEventListener('visibilitychange', () => {
-  if (document.visibilityState === 'visible') laadWeek({ opnieuw: true });
+  if (document.visibilityState === 'visible') laadPeriode({ opnieuw: true });
 });
 
 // Opnieuw meten als de ruimte voor de agenda verandert (scherm draait, inlogbalk verdwijnt, ...).
 // We blijven daarbij naar hetzelfde tijdstip kijken.
 new ResizeObserver(() => {
+  if (staat.weergave === 'maand') {
+    teken(); // hoeveel afspraken per dag passen, hangt af van de schermhoogte
+    return;
+  }
   const oudeHoogte = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--uur'));
   const urenBoven = agendaEl.scrollTop / oudeHoogte;
   const nieuweHoogte = pasUurHoogteAan();
@@ -454,4 +641,4 @@ if ('serviceWorker' in navigator) {
 // ----- Starten -----
 teken();
 scrollNaarBegin();
-laadWeek();
+laadPeriode();

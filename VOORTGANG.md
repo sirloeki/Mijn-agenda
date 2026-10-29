@@ -24,7 +24,9 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
            Let op: tijdzones "Unnamed Time Zone 1" en "Unnamed Time Zone 3" uit Outlook zijn als Amsterdam-tijd
            overgenomen; afspraken daarmee kunnen een paar uur verschoven zijn (nog controleren).
 7. [x] Afspraken toevoegen, aanpassen en verwijderen (werkt op de telefoon, synchroon met Google)
-8. [ ] Verfijnen met extra wensen
+8. [ ] Verfijnen met extra wensen (bezig)
+   - [x] Meerdaagse afspraken als één doorlopende balk
+   - [x] Maandweergave
 
 ## Gedaan
 - Outlook-agenda geëxporteerd als .ics en veilig bewaard in Google Drive (niet in GitHub, want privé).
@@ -87,6 +89,14 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - Agenda's die niet van jou zijn (Feestdagen) kun je niet aanpassen; de knoppen verschijnen daar niet.
   - Nooit e-mails of uitnodigingen naar anderen (sendUpdates=none).
 
+- Verfijningen (stap 8):
+  - Meerdaagse afspraken (hele dagen, of met tijd en 24 uur of langer) staan als één doorlopende balk
+    in de strook bovenaan. Overlappende balken komen onder elkaar. Begint een afspraak vóór de getoonde
+    week, dan staat er "‹" voor; loopt hij erna door, dan is de rechterkant recht.
+  - Maandweergave: knop "Mnd" naast 1/5/7. Meerdaagse afspraken lopen door als balk, korte afspraken
+    staan als "● 09:00 Titel" (op de telefoon zonder tijd). Past niet alles, dan "+3". Tik op een dag → die dag.
+  - Afspraken worden per week opgehaald en bewaard; de maand gebruikt dezelfde weken.
+
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
 - **Uren:** 07:00–22:00 in beeld; vroeger en later bereikbaar door te scrollen.
@@ -105,4 +115,4 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   (bijv. per categorie een aparte Google-agenda).
 
 ## Volgende stap
-Stap 8: verfijnen met extra wensen.
+Stap 8: doorlopende balken en maandweergave testen op de telefoon; daarna eventuele nieuwe wensen.
