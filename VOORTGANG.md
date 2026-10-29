@@ -27,6 +27,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
 8. [ ] Verfijnen met extra wensen (bezig)
    - [x] Meerdaagse afspraken als één doorlopende balk
    - [x] Maandweergave
+   - [x] Minder vaak inloggen (optie A: automatisch opnieuw inloggen bij de eerste tik)
 
 ## Gedaan
 - Outlook-agenda geëxporteerd als .ics en veilig bewaard in Google Drive (niet in GitHub, want privé).
@@ -55,7 +56,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - `google.js`: inloggen met Google (Google Identity Services) en agenda's/afspraken ophalen
     via de Google Calendar API. Geen eigen server; de app praat rechtstreeks met Google.
   - Client-ID staat in `google.js` (openbaar, niet geheim). Het Client secret wordt NIET gebruikt.
-  - Toegang (token) is ~1 uur geldig en wordt op het apparaat bewaard; daarna één tik op "Inloggen met Google".
+  - Toegang (token) is ~1 uur geldig en wordt op het apparaat bewaard; daarna logt de app bij de eerste tik vanzelf opnieuw in (zie stap 8).
   - De voorbeeldafspraken zijn weg; de app toont nu de aangevinkte agenda's uit Google, in hun Google-kleur.
   - Bij terugkeren naar de app worden de afspraken ververst.
 
@@ -96,6 +97,14 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
   - Maandweergave: knop "Mnd" naast 1/5/7. Meerdaagse afspraken lopen door als balk, korte afspraken
     staan als "● 09:00 Titel" (op de telefoon zonder tijd). Past niet alles, dan "+3". Tik op een dag → die dag.
   - Afspraken worden per week opgehaald en bewaard; de maand gebruikt dezelfde weken.
+  - Minder vaak inloggen (gekozen: optie A):
+    - De app onthoudt je Google-account (e-mailadres van de hoofdagenda) en geeft dat mee aan Google,
+      zodat Google niet vraagt welk account.
+    - Is de toegang (1 uur) verlopen, dan logt de eerstvolgende tik ergens in de app vanzelf opnieuw in.
+      De afspraken die al opgehaald waren, blijven zolang zichtbaar.
+    - "Uitloggen" vergeet het account; daarna gebeurt er niets meer vanzelf.
+    - Niet gekozen (kan later): optie B = maanden ingelogd blijven via een gratis Cloudflare-tussenpersoon
+      en de app in Google Cloud op "In production" zetten.
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.

@@ -49,13 +49,34 @@ function wachtOpGoogleScript() {
   });
 }
 
-// Opent het inlogvenster van Google
+// Met welk Google-account je de vorige keer inlogde (je e-mailadres).
+// Zo hoeft Google niet steeds te vragen welk account je wilt gebruiken.
+function leesAccount() {
+  try { return localStorage.getItem('googleAccount') || ''; } catch (e) { return ''; }
+}
+
+function bewaarAccount(email) {
+  try {
+    if (email) localStorage.setItem('googleAccount', email);
+    else localStorage.removeItem('googleAccount');
+  } catch (e) { /* niet erg */ }
+}
+
+// Was je eerder ingelogd (en niet zelf uitgelogd)? Dan mag de app vanzelf opnieuw inloggen.
+function eerderIngelogd() {
+  return !!leesAccount();
+}
+
+// Opent het inlogvenster van Google. Heb je eerder toestemming gegeven,
+// dan sluit het venster meestal vanzelf weer.
 async function logIn() {
   await wachtOpGoogleScript();
   return new Promise((resolve, reject) => {
+    const account = leesAccount();
     const client = google.accounts.oauth2.initTokenClient({
       client_id: GOOGLE_CLIENT_ID,
       scope: GOOGLE_SCOPE,
+      ...(account ? { login_hint: account } : {}),
       callback: antwoord => {
         if (antwoord.error) {
           reject(new Error(antwoord.error_description || antwoord.error));
@@ -76,9 +97,12 @@ async function logIn() {
   });
 }
 
-function logUit() {
+// Toegang vergeten. Met 'helemaal' (de knop Uitloggen) vergeten we ook je account,
+// zodat de app niet meer vanzelf opnieuw inlogt.
+function logUit({ helemaal = false } = {}) {
   toegang = null;
   bewaarToegang(null);
+  if (helemaal) bewaarAccount('');
 }
 
 // Een foutmelding van Google, met het statusnummer erbij (bijv. 409 = bestaat al)
@@ -123,6 +147,9 @@ async function googleVraag(pad, parameters = {}, { methode = 'GET', inhoud } = {
 // De agenda's die in Google Agenda aangevinkt staan
 async function haalAgendas() {
   const lijst = await googleVraag('/users/me/calendarList');
+  // de hoofdagenda heeft je e-mailadres als ID
+  const hoofd = lijst.items.find(item => item.primary);
+  if (hoofd) bewaarAccount(hoofd.id);
   return lijst.items
     .filter(item => item.selected || item.primary)
     .map(item => ({

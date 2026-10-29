@@ -316,12 +316,9 @@ async function slaOp() {
   } catch (fout) {
     if (fout instanceof NietIngelogdFout) {
       toonMelding('Je inlog is verlopen. ', 'Opnieuw inloggen', async () => {
-        try {
-          await logIn();
-          toonMelding('Je bent weer ingelogd. Tik nog eens op Opslaan.');
-        } catch (f) {
-          toonMelding(f.message);
-        }
+        toonMelding(await opnieuwInloggen()
+          ? 'Je bent weer ingelogd. Tik nog eens op Opslaan.'
+          : 'Inloggen is niet gelukt. Probeer het nog eens.');
       });
     } else {
       toonMelding('Opslaan is niet gelukt: ' + fout.message);

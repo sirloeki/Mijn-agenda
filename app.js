@@ -475,7 +475,7 @@ function tekenLegenda() {
     item.append(bolletje, agenda.naam);
     lijst.append(item);
   }
-  document.getElementById('uitloggen').hidden = !isIngelogd();
+  document.getElementById('uitloggen').hidden = !isIngelogd() && !eerderIngelogd();
 }
 
 function zetStatus(tekst, isFout = false) {
@@ -491,9 +491,17 @@ async function laadPeriode({ opnieuw = false } = {}) {
   document.getElementById('nieuw').hidden = !isIngelogd();
   if (!isIngelogd()) {
     inlogbalk.hidden = false;
-    agendas = [];
-    afspraken = [];
-    weekCache.clear();
+    document.getElementById('inlogtekst').textContent = eerderIngelogd()
+      ? 'Je inlog is verlopen. Tik ergens in de app, dan log je vanzelf opnieuw in.'
+      : 'Log in met Google om je afspraken te zien.';
+    if (!eerderIngelogd()) {
+      // uitgelogd: niets meer laten zien
+      agendas = [];
+      weekCache.clear();
+    }
+    // verlopen: laat zien wat we al hadden opgehaald, tot je weer bent ingelogd
+    const maandagen = [...new Set(zichtbareDagen().map(d => maandagVan(d).getTime()))].map(t => new Date(t));
+    afspraken = afsprakenUitCache(maandagen);
     tekenLegenda();
     teken();
     return;
@@ -596,19 +604,39 @@ document.querySelectorAll('.weergave .knop').forEach(knop => {
 });
 
 // ----- Inloggen en uitloggen -----
-document.getElementById('inloggen').addEventListener('click', async () => {
+let lopendeInlog = null; // zodat twee tikken niet twee keer een inlogvenster openen
+
+// Geeft true als het inloggen gelukt is
+function opnieuwInloggen() {
+  if (lopendeInlog) return lopendeInlog;
   const melding = document.getElementById('inlogmelding');
   melding.textContent = '';
-  try {
-    await logIn();
-    await laadPeriode({ opnieuw: true });
-  } catch (fout) {
-    melding.textContent = fout.message;
-  }
-});
+  lopendeInlog = (async () => {
+    try {
+      await logIn();
+      await laadPeriode({ opnieuw: true });
+      return true;
+    } catch (fout) {
+      melding.textContent = fout.message;
+      return false;
+    } finally {
+      lopendeInlog = null;
+    }
+  })();
+  return lopendeInlog;
+}
+
+document.getElementById('inloggen').addEventListener('click', opnieuwInloggen);
+
+// Automatisch opnieuw inloggen: is je inlog verlopen, dan doet je eerstvolgende tik dat vanzelf.
+// (Google laat het inlogvenster alleen openen na een tik van jou, daarom wachten we daarop.)
+document.addEventListener('click', e => {
+  if (isIngelogd() || !eerderIngelogd() || e.target.closest('#inloggen, #uitloggen')) return;
+  opnieuwInloggen();
+}, true);
 
 document.getElementById('uitloggen').addEventListener('click', () => {
-  logUit();
+  logUit({ helemaal: true });
   laadPeriode();
 });
 
