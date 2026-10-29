@@ -221,7 +221,7 @@ async function bewerkAfspraak(afspraak) {
     }
   }
 
-  bewerking = { soort, afspraak, reeks };
+  bewerking = { soort, afspraak, reeks, kleurId: reeks ? reeks.colorId || null : afspraak.kleurId };
   document.getElementById('formulier-titel').textContent =
     soort === 'keer' ? 'Deze keer aanpassen' : soort === 'reeks' ? 'Alle keren aanpassen' : 'Afspraak aanpassen';
   const bron = reeks
@@ -256,6 +256,10 @@ async function slaOp() {
     location: w.locatie,
     transparency: w.bezet ? 'opaque' : 'transparent',
   };
+  // Bezet + hele dag: rood (Tomaat) in Google. Was hij rood en nu niet meer: kleur van de agenda terug.
+  if (w.heleDag && w.bezet) inhoud.colorId = KLEUR_BEZET;
+  else if (bewerking.kleurId === KLEUR_BEZET) inhoud.colorId = null;
+
   // de notitie alleen meesturen als je hem echt hebt veranderd (zo blijft opmaak uit Google heel)
   if (w.notitie !== begin.notitie || bewerking.soort === 'nieuw') inhoud.description = w.notitie;
 

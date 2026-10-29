@@ -226,7 +226,7 @@ function tekenWeek(dagen) {
     const blokker = afspraken.find(a => isMeerdaags(a) && a.bezet && a.start < morgen && a.eind > dag);
     if (blokker) {
       kolom.classList.add('geblokt');
-      kolom.style.setProperty('--kleur', blokker.agenda.kleur);
+      kolom.style.setProperty('--kleur', blokker.kleur);
     }
     if (zelfdeDag(dag, vandaag)) {
       kolom.classList.add('vandaag');
@@ -382,8 +382,8 @@ function afsprakenOpDag(dag) {
 
 function maakAfspraakKnop(afspraak, { alsBalk = false, metTijd = false } = {}) {
   const knop = maak('button', afspraak.bezet ? 'afspraak' : 'afspraak vrij');
-  knop.style.setProperty('--kleur', afspraak.agenda.kleur);
-  knop.style.setProperty('--tekstkleur', afspraak.agenda.tekstkleur);
+  knop.style.setProperty('--kleur', afspraak.kleur);
+  knop.style.setProperty('--tekstkleur', afspraak.tekstkleur);
   const titel = maak('strong');
   titel.textContent = afspraak.titel;
   if (metTijd) {
@@ -413,7 +413,7 @@ let getoondeAfspraak = null;
 
 function toonDetails(afspraak) {
   getoondeAfspraak = afspraak;
-  document.getElementById('details-kleur').style.setProperty('--kleur', afspraak.agenda.kleur);
+  document.getElementById('details-kleur').style.setProperty('--kleur', afspraak.kleur);
   document.getElementById('details-titel').textContent = afspraak.titel;
 
   let tijd;
@@ -532,12 +532,43 @@ async function laadPeriode({ opnieuw = false } = {}) {
     afspraken = afsprakenUitCache(maandagen);
     zetStatus('');
     teken();
+    kleurBezetteDagen(afspraken);
   } catch (fout) {
     if (nummer !== laadNummer) return;
     zetStatus('');
     if (fout instanceof NietIngelogdFout) laadPeriode(); // toont de inlogknop
     else zetStatus(fout.message, true);
   }
+}
+
+// Bezette hele-dag-afspraken zonder eigen kleur maken we in Google rood (Tomaat),
+// zodat ze ook in de Google Agenda-app opvallen. Dit gebeurt per afspraak maar één keer.
+const alGekleurd = new Set();
+
+async function kleurBezetteDagen(lijst) {
+  const teKleuren = lijst.filter(a => a.heleDag && a.bezet && !a.kleurId && a.agenda.eigenaar
+    && !alGekleurd.has(`${a.agenda.id}|${a.reeksId || a.id}`));
+  if (teKleuren.length === 0) return;
+
+  for (const a of teKleuren) {
+    // bij een herhalende afspraak kleuren we de hele reeks, niet elke keer apart
+    const id = a.reeksId || a.id;
+    const sleutel = `${a.agenda.id}|${id}`;
+    if (alGekleurd.has(sleutel)) continue;
+    alGekleurd.add(sleutel);
+    try {
+      await wijzigAfspraak(a.agenda.id, id, { colorId: KLEUR_BEZET });
+    } catch (fout) {
+      continue; // lukt het niet, dan blijft de afspraak gewoon zoals hij was
+    }
+  }
+  for (const a of teKleuren) {
+    if (!alGekleurd.has(`${a.agenda.id}|${a.reeksId || a.id}`)) continue;
+    a.kleurId = KLEUR_BEZET;
+    a.kleur = AFSPRAAK_KLEUREN[KLEUR_BEZET];
+    a.tekstkleur = '#ffffff';
+  }
+  teken();
 }
 
 // Alle afspraken van de gegeven weken; een afspraak over twee weken heen maar één keer

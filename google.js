@@ -144,6 +144,23 @@ async function googleVraag(pad, parameters = {}, { methode = 'GET', inhoud } = {
   return antwoord.status === 204 ? null : antwoord.json();
 }
 
+// De kleuren die je in Google Agenda per afspraak kunt kiezen (nummer → kleur)
+const AFSPRAAK_KLEUREN = {
+  1: '#7986cb', // Lavendel
+  2: '#33b679', // Salie
+  3: '#8e24aa', // Druif
+  4: '#e67c73', // Flamingo
+  5: '#f6bf26', // Banaan
+  6: '#f4511e', // Mandarijn
+  7: '#039be5', // Pauw
+  8: '#616161', // Grafiet
+  9: '#3f51b5', // Bosbes
+  10: '#0b8043', // Basilicum
+  11: '#d50000', // Tomaat
+};
+// Bezette hele-dag-afspraken krijgen in Google de kleur Tomaat, zodat ze daar ook opvallen
+const KLEUR_BEZET = '11';
+
 // De agenda's die in Google Agenda aangevinkt staan
 async function haalAgendas() {
   const lijst = await googleVraag('/users/me/calendarList');
@@ -160,6 +177,7 @@ async function haalAgendas() {
       primair: !!item.primary,
       // mag je er afspraken in zetten? (bij "Feestdagen in Nederland" bijvoorbeeld niet)
       schrijfbaar: item.accessRole === 'owner' || item.accessRole === 'writer',
+      eigenaar: item.accessRole === 'owner',
     }))
     .sort((a, b) => b.primair - a.primair || a.naam.localeCompare(b.naam));
 }
@@ -201,6 +219,10 @@ function naarAfspraak(item, agenda) {
     // "Bezet" of "Beschikbaar" (vrij); Google noemt vrij 'transparent'
     bezet: item.transparency !== 'transparent',
     notitie: item.description || '',
+    // eigen kleur van de afspraak (in Google gekozen), anders die van de agenda
+    kleurId: item.colorId || null,
+    kleur: AFSPRAAK_KLEUREN[item.colorId] || agenda.kleur,
+    tekstkleur: item.colorId ? (item.colorId === '5' ? '#000000' : '#ffffff') : agenda.tekstkleur,
     reeksId: item.recurringEventId || null, // hoort bij een herhalende afspraak
     agenda,
   };

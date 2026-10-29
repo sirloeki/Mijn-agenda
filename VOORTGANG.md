@@ -28,6 +28,7 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
    - [x] Meerdaagse afspraken als één doorlopende balk
    - [x] Maandweergave
    - [x] Minder vaak inloggen (optie A: automatisch opnieuw inloggen bij de eerste tik)
+   - [x] Bezette hele-dag-afspraken ook in Google Agenda laten opvallen (rood, "Tomaat")
 
 ## Gedaan
 - Outlook-agenda geëxporteerd als .ics en veilig bewaard in Google Drive (niet in GitHub, want privé).
@@ -105,6 +106,13 @@ Logboek van wat we gedaan hebben, welke keuzes we maakten en wat de volgende sta
     - "Uitloggen" vergeet het account; daarna gebeurt er niets meer vanzelf.
     - Niet gekozen (kan later): optie B = maanden ingelogd blijven via een gratis Cloudflare-tussenpersoon
       en de app in Google Cloud op "In production" zetten.
+  - Bezet ook zichtbaar in Google Agenda:
+    - Google Agenda toont zelf geen verschil tussen bezet en vrij (en kan geen dag "blokken").
+      Oplossing: bezette hele-dag-afspraken krijgen in Google de kleur Tomaat (rood, colorId 11).
+    - Automatisch: bezette hele-dag-afspraken zonder eigen kleur in een eigen agenda worden rood zodra
+      de app ze ophaalt (bij een herhalende afspraak de hele reeks). Eigen gekozen kleuren blijven staan.
+    - Bij opslaan in de app: hele dag + bezet → rood; was rood en nu niet meer → weer de kleur van de agenda.
+    - De app toont nu ook de kleur die een afspraak in Google heeft (anders die van de agenda).
 
 ## Gemaakte keuzes
 - **Weergave:** knop om te kiezen tussen 1, 5 of 7 dagen. Standaard 7 dagen, week begint op maandag.
